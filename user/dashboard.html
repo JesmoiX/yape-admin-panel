@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yape | Mi Cuenta</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+
+<body>
+
+    <div class="app-layout">
+
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div
+                style="font-weight: 800; font-size: 1.5rem; color: var(--primary); margin-bottom: 2rem; display: flex; align-items: center; gap: 0.5rem;">
+                📱 YapeUser
+            </div>
+
+            <nav>
+                <a href="#" class="nav-item active">
+                    📊 Mi Dashboard
+                </a>
+            </nav>
+
+            <div
+                style="margin-top: auto; padding: 1rem; background: var(--background); border-radius: 8px; margin-bottom: 1rem;">
+                <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.25rem;">Dispositivo Conectado
+                </div>
+                <div style="font-family: monospace; font-weight: bold;" id="userDeviceBadge">Loading...</div>
+            </div>
+
+            <button onclick="logout()" class="glass-button"
+                style="width: 100%; background: var(--danger-bg); color: var(--danger); border: 1px solid rgba(239,68,68,0.2);">
+                Cerrar Sesión
+            </button>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="main-content">
+
+            <header style="margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: start;">
+                <div>
+                    <h1 style="font-size: 1.8rem;" id="welcomeMsg">Bienvenido</h1>
+                    <p style="color: var(--text-muted);">Tus reportes financieros al día</p>
+                </div>
+            </header>
+
+            <!-- Stats Grid -->
+            <div
+                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+                <div class="card">
+                    <h3 style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 0.5rem;">Hoy</h3>
+                    <span style="font-size: 1.8rem; font-weight: 700; color: var(--success);" id="statToday">S/
+                        0.00</span>
+                </div>
+                <div class="card">
+                    <h3 style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 0.5rem;">Este Mes</h3>
+                    <span style="font-size: 1.8rem; font-weight: 700;" id="statMonth">S/ 0.00</span>
+                </div>
+                <div class="card">
+                    <h3 style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 0.5rem;">Total Histórico
+                    </h3>
+                    <span style="font-size: 1.8rem; font-weight: 700;" id="statTotal">S/ 0.00</span>
+                </div>
+            </div>
+
+            <!-- Filters -->
+            <div class="card" style="margin-bottom: 2rem;">
+                <h3 style="margin-bottom: 1rem;">Filtros de Búsqueda</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                    <div>
+                        <label
+                            style="display: block; margin-bottom: 0.5rem; font-size: 0.85rem; font-weight: 500;">Rango
+                            de Fechas</label>
+                        <input type="text" id="dateFilter" class="form-control" placeholder="Seleccionar...">
+                    </div>
+                    <div>
+                        <label
+                            style="display: block; margin-bottom: 0.5rem; font-size: 0.85rem; font-weight: 500;">Nombre
+                            Remitente</label>
+                        <input type="text" id="nameFilter" class="form-control" placeholder="Ej: Juan">
+                    </div>
+                    <div>
+                        <label
+                            style="display: block; margin-bottom: 0.5rem; font-size: 0.85rem; font-weight: 500;">Monto
+                            Mínimo</label>
+                        <input type="number" id="minAmountFilter" class="form-control" placeholder="0.00">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Table -->
+            <div class="card">
+                <h3 style="margin-bottom: 1rem; display:flex; justify-content:space-between; align-items:center;">
+                    Historial de Pagos
+                    <span class="badge" style="background: var(--background); color: var(--text);" id="resultsCount">0
+                        registros</span>
+                </h3>
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%;">
+                        <thead>
+                            <tr>
+                                <th>Fecha y Hora</th>
+                                <th>Remitente</th>
+                                <th>Monto</th>
+                            </tr>
+                        </thead>
+                        <tbody id="paymentsTableBody">
+                            <tr>
+                                <td colspan="4" class="text-center">Cargando...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="../js/firebase-config.js"></script>
+    <script src="../js/auth.js"></script>
+    <script>
+        checkAuth('user');
+        function logout() {
+            localStorage.removeItem('yape_user');
+            window.location.href = '../index.html';
+        }
+    </script>
+    <script src="../js/user.js"></script>
+</body>
+
+</html>

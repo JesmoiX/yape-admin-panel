@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yape Admin | Login</title>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* Styles moved to css/style.css */
+    </style>
+</head>
+
+<body>
+
+    <div class="login-container">
+        <div class="login-card">
+            <span class="logo">Yape Admin</span>
+
+            <form id="loginForm">
+                <div class="mb-4" style="text-align: left;">
+                    <label
+                        style="display: block; margin-bottom: 0.5rem; font-size: 0.9rem; color: var(--text-muted); font-weight: 500;">Usuario</label>
+                    <input type="text" id="username" class="form-control" placeholder="admin" required>
+                </div>
+
+                <div class="mb-4" style="text-align: left;">
+                    <label
+                        style="display: block; margin-bottom: 0.5rem; font-size: 0.9rem; color: var(--text-muted); font-weight: 500;">Contraseña</label>
+                    <input type="password" id="password" class="form-control" placeholder="••••••••" required>
+                </div>
+
+                <button type="submit" class="glass-button" style="width: 100%; margin-top: 1rem;">
+                    Ingresar
+                </button>
+            </form>
+
+            <p id="errorMessage" style="color: var(--danger); margin-top: 1rem; display: none;"></p>
+        </div>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+    <!-- App Config & Logic -->
+    <script src="js/firebase-config.js"></script>
+    <script src="js/auth.js"></script>
+
+</body>
+
+</html>

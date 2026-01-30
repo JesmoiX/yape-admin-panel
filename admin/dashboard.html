@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yape Admin | Panel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Flatpickr -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+
+<body>
+
+    <div class="app-layout">
+
+        <!-- SIDEBAR -->
+        <aside class="sidebar">
+            <div
+                style="font-weight: 800; font-size: 1.5rem; color: var(--primary); margin-bottom: 2rem; display: flex; align-items: center; gap: 0.5rem;">
+                📱 YapeManager
+            </div>
+
+            <nav>
+                <a onclick="switchTab('dashboard')" class="nav-item active" id="nav-dashboard">
+                    📊 Dashboard
+                </a>
+                <a onclick="switchTab('devices')" class="nav-item" id="nav-devices">
+                    📱 Dispositivos
+                </a>
+                <a onclick="switchTab('users')" class="nav-item" id="nav-users">
+                    👥 Usuarios Web
+                </a>
+                <a onclick="switchTab('reports')" class="nav-item" id="nav-reports">
+                    📄 Reportes & Datos
+                </a>
+            </nav>
+
+            <div style="margin-top: auto;">
+                <button onclick="logout()" class="glass-button"
+                    style="width: 100%; background: var(--danger-bg); color: var(--danger); border: 1px solid rgba(239,68,68,0.2);">
+                    Cerrar Sesión
+                </button>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="main-content">
+
+            <!-- VIEW: DASHBOARD -->
+            <div id="view-dashboard" class="view-section">
+                <header style="margin-bottom: 2rem;">
+                    <h1 style="font-size: 1.8rem;">Dashboard General</h1>
+                    <p style="color: var(--text-muted);">Resumen de actividad en tiempo real</p>
+                </header>
+
+                <div
+                    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+                    <div class="card">
+                        <h3 style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 0.5rem;">Total
+                            Dispositivos</h3>
+                        <div style="display: flex; justify-content: space-between; align-items: end;">
+                            <span style="font-size: 2rem; font-weight: 700;" id="totalDevices">0</span>
+                            <span class="badge badge-pending" id="pendingDevicesBadge" style="display:none;">0
+                                Pendientes</span>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3 style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 0.5rem;">Recaudado Hoy
+                        </h3>
+                        <span style="font-size: 2rem; font-weight: 700; color: var(--success);" id="todayTotalAmount">S/
+                            0.00</span>
+                        <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem;"
+                            id="todayPaymentsCount">0 transacciones</div>
+                    </div>
+                    <div class="card">
+                        <h3 style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 0.5rem;">Total
+                            Histórico</h3>
+                        <span style="font-size: 2rem; font-weight: 700; color: var(--primary);" id="totalAmount">S/
+                            0.00</span>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3 style="margin-bottom: 1rem;">Últimos Pagos Recibidos</h3>
+                    <div style="overflow-x: auto;">
+                        <table style="width: 100%;">
+                            <thead>
+                                <tr>
+                                    <th>Hora</th>
+                                    <th>Dispositivo</th>
+                                    <th>Remitente</th>
+                                    <th>Monto</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recentPaymentsTable">
+                                <!-- Populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW: DEVICES -->
+            <div id="view-devices" class="view-section" style="display: none;">
+                <header style="margin-bottom: 2rem;">
+                    <h1 style="font-size: 1.8rem;">Gestión de Dispositivos</h1>
+                    <p style="color: var(--text-muted);">Administra los celulares conectados a la app</p>
+                </header>
+
+                <div class="card">
+                    <table style="width: 100%;">
+                        <thead>
+                            <tr>
+                                <th>Código</th>
+                                <th>Modelo / Info</th>
+                                <th>Estado</th>
+                                <th>Registrado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="devicesTableBody">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- VIEW: USERS -->
+            <div id="view-users" class="view-section" style="display: none;">
+                <header
+                    style="margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <h1 style="font-size: 1.8rem;">Usuarios Web</h1>
+                        <p style="color: var(--text-muted);">Asigna cuentas a los clientes para que vean sus reportes
+                        </p>
+                    </div>
+                    <button onclick="showCreateUserModal()" class="glass-button">
+                        + Nuevo Usuario
+                    </button>
+                </header>
+
+                <div class="card">
+                    <table style="width: 100%;">
+                        <thead>
+                            <tr>
+                                <th>Usuario</th>
+                                <th>Dispositivo Asociado</th>
+                                <th>Contraseña</th>
+                                <th>Fecha Inicio</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTableBody">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- VIEW: REPORTS -->
+            <div id="view-reports" class="view-section" style="display: none;">
+                <header style="margin-bottom: 2rem;">
+                    <h1 style="font-size: 1.8rem;">Reportes Avanzados</h1>
+                    <p style="color: var(--text-muted);">Consulta y filtra la base de datos completa</p>
+                </header>
+
+                <div class="card"
+                    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                    <div>
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Filtrar por Cliente
+                            (Usuario)</label>
+                        <select id="reportUserSelect" class="form-control">
+                            <option value="">Todos los usuarios</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Rango de Fecha</label>
+                        <input type="text" id="reportDateRange" class="form-control"
+                            placeholder="Seleccionar fechas...">
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Buscar Texto</label>
+                        <input type="text" id="reportSearch" class="form-control" placeholder="Nombre, mensaje...">
+                    </div>
+                    <div style="display: flex; align-items: end;">
+                        <button onclick="applyReportFilters()" class="glass-button" style="width: 100%;">Aplicar
+                            Filtros</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3 style="margin-bottom: 1rem; display: flex; justify-content: space-between;">
+                        Resultados
+                        <span id="reportCount" class="badge"
+                            style="background: var(--background); color: var(--text);">0 registros</span>
+                    </h3>
+                    <div style="overflow-x: auto;">
+                        <table style="width: 100%;">
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Usuario/Device</th>
+                                    <th>Remitente</th>
+                                    <th>Monto</th>
+                                    <th>Detalle</th>
+                                </tr>
+                            </thead>
+                            <tbody id="reportsTableBody">
+                                <tr>
+                                    <td colspan="5" class="text-center">Selecciona filtros para buscar</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- MODAL: CREATE USER -->
+    <div id="createUserModal"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(4px);">
+        <div class="card" style="width: 100%; max-width: 500px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);">
+            <h3 style="margin-bottom: 1.5rem; font-size: 1.25rem;">Crear Nuevo Usuario</h3>
+
+            <form id="createUserForm">
+                <div class="mb-4">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Dispositivo Aprobado</label>
+                    <select id="deviceSelect" class="form-control" required>
+                        <option value="">Cargando...</option>
+                    </select>
+                </div>
+
+                <div class="mb-4">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Usuario</label>
+                    <input type="text" id="newUsername" class="form-control" placeholder="Ej: JuanPerez" required>
+                </div>
+
+                <div class="mb-4">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 500;">Contraseña</label>
+                    <input type="text" id="newPassword" class="form-control" placeholder="Contraseña..." required>
+                </div>
+
+                <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                    <button type="button" onclick="document.getElementById('createUserModal').style.display='none'"
+                        class="glass-button"
+                        style="background: transparent; border: 1px solid var(--border); color: var(--text); width: 100%;">Cancelar</button>
+                    <button type="submit" class="glass-button" style="width: 100%;">Crear</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="../js/firebase-config.js"></script>
+    <script src="../js/auth.js"></script>
+    <script>checkAuth('admin');</script>
+    <script src="../js/admin.js"></script>
+</body>
+
+</html>

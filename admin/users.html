@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yape Admin | Usuarios</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav class="glass-panel"
+        style="margin: 1rem; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center;">
+        <div style="font-weight: 700; font-size: 1.25rem;">
+            <a href="dashboard.html" style="color: white; text-decoration: none;">Yape Admin Panel</a> / Usuarios
+        </div>
+        <div style="display: flex; gap: 1rem;">
+            <a href="dashboard.html" class="glass-button"
+                style="background: transparent; border: 1px solid var(--border);">Volver al Dashboard</a>
+            <button onclick="logout()" class="glass-button"
+                style="padding: 0.25rem 0.75rem; font-size: 0.8rem; background: var(--danger);">Salir</button>
+        </div>
+    </nav>
+
+    <div class="container">
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+            <h2>Gestión de Usuarios</h2>
+            <button onclick="showCreateUserModal()" class="glass-button">
+                + Nuevo Usuario
+            </button>
+        </div>
+
+        <!-- Users List -->
+        <div class="glass-panel" style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                <thead>
+                    <tr style="border-bottom: 1px solid var(--border);">
+                        <th style="padding: 1rem;">Usuario</th>
+                        <th style="padding: 1rem;">Dispositivo Asignado</th>
+                        <th style="padding: 1rem;">Fecha Creación</th>
+                        <th style="padding: 1rem;">Contraseña</th>
+                        <th style="padding: 1rem;">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="usersTableBody">
+                    <tr>
+                        <td colspan="5" style="padding: 2rem; text-align: center; color: var(--text-muted);">Cargando
+                            usuarios...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <!-- Modal Create User -->
+    <div id="createUserModal"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center;">
+        <div class="glass-panel" style="width: 100%; max-width: 500px; padding: 2rem;">
+            <h3 style="margin-bottom: 1.5rem;">Crear Nuevo Usuario</h3>
+
+            <form id="createUserForm">
+                <div class="mb-4">
+                    <label style="display: block; margin-bottom: 0.5rem; color: var(--text-muted);">Dispositivo
+                        Aprobado</label>
+                    <select id="deviceSelect" class="glass-input" required>
+                        <option value="">Seleccione un dispositivo...</option>
+                    </select>
+                    <small style="color: var(--text-muted);">Solo aparecen dispositivos aprobados sin usuario
+                        asignado.</small>
+                </div>
+
+                <div class="mb-4">
+                    <label style="display: block; margin-bottom: 0.5rem; color: var(--text-muted);">Nombre de
+                        Usuario</label>
+                    <input type="text" id="newUsername" class="glass-input" placeholder="Ej: usuario1" required>
+                </div>
+
+                <div class="mb-4">
+                    <label style="display: block; margin-bottom: 0.5rem; color: var(--text-muted);">Contraseña</label>
+                    <input type="text" id="newPassword" class="glass-input" placeholder="Generar contraseña..."
+                        required>
+                </div>
+
+                <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                    <button type="button" onclick="closeModal()" class="glass-button"
+                        style="background: transparent; border: 1px solid var(--border); width: 100%;">Cancelar</button>
+                    <button type="submit" class="glass-button" style="width: 100%;">Crear Usuario</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="../js/firebase-config.js"></script>
+    <script src="../js/auth.js"></script>
+    <script>
+        checkAuth('admin');
+        function logout() {
+            localStorage.removeItem('yape_user');
+            window.location.href = '../index.html';
+        }
+    </script>
+    <script src="../js/admin-users.js"></script>
+</body>
+
+</html>
