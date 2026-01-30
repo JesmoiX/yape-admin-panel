@@ -57,28 +57,26 @@
 
                 <div
                     style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
-                    <div class="card">
-                        <h3 style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 0.5rem;">Total
-                            Dispositivos</h3>
-                        <div style="display: flex; justify-content: space-between; align-items: end;">
-                            <span style="font-size: 2rem; font-weight: 700;" id="totalDevices">0</span>
-                            <span class="badge badge-pending" id="pendingDevicesBadge" style="display:none;">0
-                                Pendientes</span>
-                        </div>
+                    
+                    <!-- Card 1: Pendientes -->
+                    <div class="card" style="border-left: 5px solid var(--warning);">
+                        <h3 style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 0.5rem;">Dispositivos Pendientes</h3>
+                        <span style="font-size: 2.5rem; font-weight: 700; color: var(--warning);" id="dashboardPendingCount">0</span>
+                        <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem;">Solicitudes de acceso</div>
                     </div>
-                    <div class="card">
-                        <h3 style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 0.5rem;">Recaudado Hoy
-                        </h3>
-                        <span style="font-size: 2rem; font-weight: 700; color: var(--success);" id="todayTotalAmount">S/
-                            0.00</span>
-                        <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem;"
-                            id="todayPaymentsCount">0 transacciones</div>
+
+                    <!-- Card 2: Total Dispositivos -->
+                    <div class="card" style="border-left: 5px solid var(--primary);">
+                        <h3 style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 0.5rem;">Total Dispositivos</h3>
+                        <span style="font-size: 2.5rem; font-weight: 700; color: var(--primary);" id="dashboardTotalDevices">0</span>
+                        <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem;">Celulares registrados</div>
                     </div>
-                    <div class="card">
-                        <h3 style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 0.5rem;">Total
-                            Histórico</h3>
-                        <span style="font-size: 2rem; font-weight: 700; color: var(--primary);" id="totalAmount">S/
-                            0.00</span>
+
+                    <!-- Card 3: Total Usuarios -->
+                    <div class="card" style="border-left: 5px solid var(--success);">
+                        <h3 style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 0.5rem;">Total Usuarios Web</h3>
+                        <span style="font-size: 2.5rem; font-weight: 700; color: var(--success);" id="dashboardTotalUsers">0</span>
+                        <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem;">Clientes con acceso</div>
                     </div>
                 </div>
 
