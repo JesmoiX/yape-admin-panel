@@ -272,9 +272,9 @@ function renderUsers() {
             <td data-label="Usuario" style="font-weight: bold;">${user.username}</td>
             <td data-label="Dispositivo" style="font-family: monospace;">${user.deviceCode}</td>
             <td data-label="Contraseña">
-                <div style="display: flex; align-items: center; gap: 5px; border: 1px solid var(--border); padding: 5px 10px; border-radius: 8px; background: var(--surface); width: fit-content; margin-left: auto;">
+                <div style="display: flex; align-items: center; gap: 5px; border: 1px solid var(--border); padding: 5px 10px; border-radius: 8px; background: var(--surface); width: fit-content;">
                     <input type="password" id="${passId}" value="${user.password}"
-                        style="border: none; background: transparent; outline: none; width: 100px; font-family: monospace; color: var(--text); font-size: 1rem; text-align: right;"
+                        style="border: none; background: transparent; outline: none; width: 120px; font-family: monospace; color: var(--text); font-size: 1rem;"
                         onkeypress="if(event.key === 'Enter') updateUserPassword('${user.username}', this.value)"
                     >
                     <button onclick="togglePassword('${passId}', this)" type="button"
@@ -283,7 +283,7 @@ function renderUsers() {
                         👁️
                     </button>
                 </div>
-                <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 2px;">Enter para guardar</div>
+                <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 2px; padding-left: 5px;">Enter para guardar</div>
             </td>
             <td data-label="Inicio">${date}</td>
             <td data-label="Acciones">

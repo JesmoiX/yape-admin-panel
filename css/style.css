@@ -356,5 +356,11 @@ tr:last-child td {
     td input[type="password"],
     td input[type="text"] {
         max-width: 100px;
+        text-align: right;
+    }
+
+    /* Align password container to right on mobile */
+    td[data-label="Contraseña"]>div {
+        margin-left: auto;
     }
 }
