@@ -237,3 +237,57 @@ tr:last-child td {
     margin-bottom: 2rem;
     display: block;
 }
+
+/* Responsive Sidebar */
+.mobile-toggle {
+    display: none;
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    z-index: 100;
+    padding: 0.5rem 0.8rem;
+    font-size: 1.5rem;
+    background: var(--surface);
+    color: var(--primary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.3s ease-in-out;
+        width: 80%;
+        /* Slightly less than full screen */
+        max-width: 300px;
+        box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .sidebar.active {
+        transform: translateX(0);
+    }
+
+    .main-content {
+        margin-left: 0;
+        padding: 1rem;
+        padding-top: 4rem;
+        /* Space for toggle button */
+    }
+
+    .mobile-toggle {
+        display: block;
+    }
+
+    /* Adjust text size for mobile tables */
+    td,
+    th {
+        padding: 0.5rem;
+        font-size: 0.8rem;
+    }
+
+    .glass-button {
+        padding: 0.5rem;
+        font-size: 0.9rem;
+    }
+}

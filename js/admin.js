@@ -91,7 +91,29 @@ window.switchTab = function (tabName) {
         if (tabName === 'users') renderUsers();
         if (tabName === 'dashboard') renderDashboard();
     }
+
+    // Mobile: Close sidebar after selection
+    if (window.innerWidth <= 768) {
+        document.querySelector('.sidebar').classList.remove('active');
+    }
 };
+
+window.toggleSidebar = function (e) {
+    if (e) e.stopPropagation(); // Prevent immediate closing
+    document.querySelector('.sidebar').classList.toggle('active');
+};
+
+// Close sidebar when clicking outside
+document.addEventListener('click', function (event) {
+    const sidebar = document.querySelector('.sidebar');
+    const toggleBtn = document.querySelector('.mobile-toggle');
+
+    if (sidebar.classList.contains('active') &&
+        !sidebar.contains(event.target) &&
+        !toggleBtn.contains(event.target)) {
+        sidebar.classList.remove('active');
+    }
+});
 
 window.logout = function () {
     localStorage.removeItem('yape_user');
