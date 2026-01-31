@@ -290,4 +290,71 @@ tr:last-child td {
         padding: 0.5rem;
         font-size: 0.9rem;
     }
+
+    /* Mobile Table: Transform to Cards */
+    table,
+    thead,
+    tbody,
+    th,
+    td,
+    tr {
+        display: block;
+    }
+
+    thead tr {
+        position: absolute;
+        top: -9999px;
+        left: -9999px;
+    }
+
+    tbody tr {
+        margin-bottom: 1.5rem;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 1.25rem;
+        box-shadow: var(--shadow);
+    }
+
+    td {
+        border: none;
+        position: relative;
+        padding: 0.75rem 0;
+        display: flex;
+        justify-content: space-between;
+        /* Label left, value right */
+        align-items: center;
+        text-align: right;
+        border-bottom: 1px solid var(--background);
+    }
+
+    td:last-child {
+        border-bottom: none;
+        justify-content: center;
+        /* Actions centered */
+        padding-top: 1.5rem;
+        border-top: 1px dashed var(--border);
+        margin-top: 0.5rem;
+    }
+
+    /* Label using data-label attribute */
+    td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: var(--text-muted);
+        font-size: 0.85rem;
+        text-align: left;
+        margin-right: 1.5rem;
+    }
+
+    /* Handle content inside cells for mobile */
+    td>* {
+        text-align: right;
+    }
+
+    /* Input password fix for mobile */
+    td input[type="password"],
+    td input[type="text"] {
+        max-width: 100px;
+    }
 }

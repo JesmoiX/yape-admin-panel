@@ -214,11 +214,11 @@ function renderDevices() {
         actions += `<button onclick="deleteDevice('${device.code}')" class="glass-button" style="padding: 0.6rem; font-size: 1.1rem; background: var(--danger);" title="Eliminar Definitivamente">🗑</button>`;
 
         tr.innerHTML = `
-            <td style="font-family: monospace; font-weight: bold; font-size: 1.1rem;">${device.code}</td>
-            <td>${device.model || 'Unknown'}<br><small style="color:var(--text-muted)">${device.manufacturer || ''}</small></td>
-            <td>${statusBadge}</td>
-            <td>${date}</td>
-            <td>${actions}</td>
+            <td data-label="Código" style="font-family: monospace; font-weight: bold; font-size: 1.1rem;">${device.code}</td>
+            <td data-label="Modelo">${device.model || 'Unknown'}<br><small style="color:var(--text-muted)">${device.manufacturer || ''}</small></td>
+            <td data-label="Estado">${statusBadge}</td>
+            <td data-label="Registrado">${date}</td>
+            <td data-label="Acciones">${actions}</td>
         `;
         tbody.appendChild(tr);
     });
@@ -269,24 +269,24 @@ function renderUsers() {
         const passId = `pass-${user.username.replace(/[^a-zA-Z0-9]/g, '')}`;
 
         tr.innerHTML = `
-            <td style="font-weight: bold;">${user.username}</td>
-            <td style="font-family: monospace;">${user.deviceCode}</td>
-            <td>
-                <div style="display: flex; align-items: center; gap: 5px; border: 1px solid var(--border); padding: 5px 10px; border-radius: 8px; background: var(--surface); width: fit-content;">
-                    <input type="password" id="${passId}" value="${user.password}" 
-                        style="border: none; background: transparent; outline: none; width: 120px; font-family: monospace; color: var(--text); font-size: 1rem;"
+            <td data-label="Usuario" style="font-weight: bold;">${user.username}</td>
+            <td data-label="Dispositivo" style="font-family: monospace;">${user.deviceCode}</td>
+            <td data-label="Contraseña">
+                <div style="display: flex; align-items: center; gap: 5px; border: 1px solid var(--border); padding: 5px 10px; border-radius: 8px; background: var(--surface); width: fit-content; margin-left: auto;">
+                    <input type="password" id="${passId}" value="${user.password}"
+                        style="border: none; background: transparent; outline: none; width: 100px; font-family: monospace; color: var(--text); font-size: 1rem; text-align: right;"
                         onkeypress="if(event.key === 'Enter') updateUserPassword('${user.username}', this.value)"
                     >
-                    <button onclick="togglePassword('${passId}', this)" type="button" 
-                        style="background: none; border: none; cursor: pointer; padding: 0; font-size: 1.1rem; display: flex; align-items: center; opacity: 0.6;" 
+                    <button onclick="togglePassword('${passId}', this)" type="button"
+                        style="background: none; border: none; cursor: pointer; padding: 0; font-size: 1.1rem; display: flex; align-items: center; opacity: 0.6;"
                         title="Ver/Ocultar">
                         👁️
                     </button>
                 </div>
-                <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 2px; padding-left: 5px;">Enter para guardar</div>
+                <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 2px;">Enter para guardar</div>
             </td>
-            <td>${date}</td>
-            <td>
+            <td data-label="Inicio">${date}</td>
+            <td data-label="Acciones">
                 <button onclick="deleteUser('${user.username}')" class="glass-button" style="padding: 0.6rem; font-size: 1.1rem; background: var(--danger);">🗑</button>
             </td>
         `;
