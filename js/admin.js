@@ -403,14 +403,29 @@ createUserForm.addEventListener('submit', (e) => {
     submitBtn.disabled = true;
     submitBtn.textContent = "Creando...";
 
-    usersRef.child(username).set({
-        username,
-        password,
-        deviceCode,
-        role: 'user',
+    // Save user data in devices/{deviceCode}/user (for mobile app login)
+    const userData = {
+        username: username,
+        password: password,
+        active: true,
+        capture_yape: true,
+        capture_gmail: false,
+        google_home_enabled: false,
+        google_sheet_url: "",
         createdAt: firebase.database.ServerValue.TIMESTAMP
+    };
+
+    devicesRef.child(deviceCode).child('user').set(userData).then(() => {
+        // Also save in users/ for admin panel compatibility
+        return usersRef.child(username).set({
+            username,
+            password,
+            deviceCode,
+            role: 'user',
+            createdAt: firebase.database.ServerValue.TIMESTAMP
+        });
     }).then(() => {
-        alert("¡Usuario creado exitosamente!");
+        alert("¡Usuario creado exitosamente!\n\nCredenciales:\nUsuario: " + username + "\nContraseña: " + password + "\nDispositivo: " + deviceCode);
         modal.style.display = 'none';
         createUserForm.reset();
 
