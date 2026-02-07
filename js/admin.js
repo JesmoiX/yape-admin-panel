@@ -259,7 +259,8 @@ function renderDevices() {
         tr.innerHTML = `
             <td class="px-6 py-4 font-mono font-bold text-slate-900 dark:text-white">${device.code}</td>
             <td class="px-6 py-4">
-                <div class="font-medium text-slate-900 dark:text-white">${device.model || 'Unknown'}</div>
+                <div class="font-medium text-slate-900 dark:text-white" title="${device.model || ''}">${device.deviceName || device.model || 'Unknown'}</div>
+                ${(device.deviceName && device.deviceName !== device.model) ? `<div class="text-[10px] text-slate-400 font-mono">${device.model}</div>` : ''}
                 <div class="text-xs text-slate-500 dark:text-slate-400">${device.manufacturer || ''}</div>
             </td>
             <td class="px-6 py-4">${statusBadge}</td>
