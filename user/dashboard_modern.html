@@ -75,6 +75,20 @@
         .dark ::-webkit-scrollbar-thumb:hover {
             background: #475569;
         }
+
+        /* Sidebar Transitions & Mobile */
+        aside {
+            transition: transform 0.3s ease-in-out, width 0.3s ease-in-out;
+        }
+
+        aside.mobile-active {
+            display: flex !important;
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            z-index: 50;
+            background-color: rgba(5, 5, 5, 0.95);
+        }
     </style>
 
     <!-- Firebase SDKs -->
@@ -88,9 +102,16 @@
 
     <div class="flex h-screen w-full">
         <!-- SIDEBAR -->
-        <aside
-            class="relative z-30 hidden md:flex w-24 flex-col items-center py-10 h-full bg-[#050505]/95 backdrop-blur-xl transition-all duration-300 border-r border-white/5">
-            <div class="flex flex-col items-center mb-12">
+        <aside id="sidebar"
+            class="hidden md:flex w-24 flex-col items-center py-10 h-full bg-[#050505]/95 backdrop-blur-xl border-r border-white/5 z-[60] fixed md:relative inset-y-0 left-0 transition-all duration-300">
+
+            <!-- Mobile Close Button -->
+            <button onclick="toggleSidebar()"
+                class="md:hidden absolute top-2 right-2 p-2 text-slate-400 hover:text-white transition-colors bg-white/5 rounded-full">
+                <span class="material-symbols-outlined text-2xl">close</span>
+            </button>
+
+            <div class="flex flex-col items-center mb-12 mt-4 md:mt-0">
                 <div
                     class="size-12 rounded-2xl bg-gradient-to-tr from-primary to-accent flex items-center justify-center text-white font-black text-xl shadow-[0_0_20px_rgba(91,19,236,0.5)]">
                     Y
@@ -130,9 +151,14 @@
 
             <!-- Mobile Header -->
             <header
-                class="md:hidden flex items-center justify-between p-6 bg-white dark:bg-[#0f0a19] border-b border-slate-200 dark:border-slate-800">
-                <div class="font-black text-2xl bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent">
+                class="md:hidden flex items-center justify-between p-4 bg-white dark:bg-[#0f0a19] border-b border-slate-200 dark:border-slate-800 shrink-0 sticky top-0 z-40">
+                <div class="font-black text-xl bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent">
                     YapeUser</div>
+                <button
+                    class="text-slate-500 bg-slate-100 dark:bg-slate-800 p-2 rounded-lg hover:bg-slate-200 transition-colors relative z-50"
+                    onclick="toggleSidebar()">
+                    <span class="material-symbols-outlined text-xl">menu</span>
+                </button>
             </header>
 
             <div class="flex-1 overflow-y-auto p-6 md:p-12 scroll-smooth">
@@ -142,7 +168,7 @@
                     <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
                         <div class="flex flex-col gap-2">
                             <h1 id="welcomeMsg"
-                                class="text-4xl md:text-5xl font-black tracking-tight text-slate-900 dark:text-white">
+                                class="text-2xl md:text-5xl font-black tracking-tight text-slate-900 dark:text-white leading-tight">
                                 Hola, Usuario</h1>
                             <p class="text-slate-500 dark:text-slate-400 text-lg font-medium flex items-center gap-2">
                                 <span class="size-2 rounded-full bg-green-500 animate-pulse"></span>
@@ -151,76 +177,83 @@
                         </div>
                     </div>
 
-                    <!-- Stats Grid -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                    <!-- Stats Grid (Compact 3 Cols Mobile) -->
+                    <div class="grid grid-cols-3 gap-2 md:gap-6 mb-4 md:mb-8">
 
                         <!-- CARD: HOY -->
                         <div
-                            class="bg-white dark:bg-[#151024] rounded-[2rem] p-8 shadow-premium hover:shadow-premium-hover transition-all duration-300 group cursor-default relative overflow-hidden border border-slate-100 dark:border-slate-800">
+                            class="bg-white dark:bg-[#151024] rounded-xl md:rounded-[2rem] p-2 md:p-8 shadow-premium hover:shadow-premium-hover transition-all duration-300 group cursor-default relative overflow-hidden border border-slate-100 dark:border-slate-800">
                             <div
-                                class="absolute -right-10 -top-10 size-40 bg-emerald-500/5 rounded-full blur-3xl group-hover:bg-emerald-500/10 transition-colors">
+                                class="absolute -right-10 -top-10 size-20 md:size-40 bg-emerald-500/5 rounded-full blur-3xl group-hover:bg-emerald-500/10 transition-colors">
                             </div>
-                            <div class="flex flex-col h-full justify-between gap-6 relative z-10">
-                                <div class="flex justify-between items-start">
-                                    <div class="p-3 rounded-2xl bg-emerald-50 dark:bg-emerald-500/10 text-emerald-500">
-                                        <span class="material-symbols-outlined text-3xl">today</span>
+                            <div
+                                class="flex flex-col h-full justify-center md:justify-between items-center md:items-stretch gap-1 md:gap-6 relative z-10">
+                                <div class="flex justify-center md:justify-between items-start w-full">
+                                    <div
+                                        class="p-2 md:p-3 rounded-xl md:rounded-2xl bg-emerald-50 dark:bg-emerald-500/10 text-emerald-500">
+                                        <span class="material-symbols-outlined text-2xl md:text-3xl">today</span>
                                     </div>
                                     <span
-                                        class="text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-500 px-3 py-1 rounded-full">Hoy</span>
+                                        class="hidden md:block text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-500 px-3 py-1 rounded-full">Hoy</span>
                                 </div>
-                                <div>
+                                <div class="text-center md:text-left">
                                     <h3 id="statToday"
-                                        class="text-5xl font-black text-emerald-600 dark:text-emerald-400 tracking-tighter mb-1">
+                                        class="text-xl md:text-5xl font-black text-emerald-600 dark:text-emerald-400 tracking-tighter mb-0 md:mb-1">
                                         S/ 0.00</h3>
-                                    <p class="text-slate-500 dark:text-slate-400 font-bold text-sm">Ingresos del Día
-                                    </p>
+                                    <p class="hidden md:block text-slate-500 dark:text-slate-400 font-bold text-sm">
+                                        Ingresos del Día</p>
                                 </div>
                             </div>
                         </div>
 
                         <!-- CARD: ESTE MES -->
                         <div
-                            class="bg-white dark:bg-[#151024] rounded-[2rem] p-8 shadow-premium hover:shadow-premium-hover transition-all duration-300 group cursor-default relative overflow-hidden border border-slate-100 dark:border-slate-800">
+                            class="bg-white dark:bg-[#151024] rounded-xl md:rounded-[2rem] p-2 md:p-8 shadow-premium hover:shadow-premium-hover transition-all duration-300 group cursor-default relative overflow-hidden border border-slate-100 dark:border-slate-800">
                             <div
-                                class="absolute -right-10 -top-10 size-40 bg-primary/5 rounded-full blur-3xl group-hover:bg-primary/10 transition-colors">
+                                class="absolute -right-10 -top-10 size-20 md:size-40 bg-primary/5 rounded-full blur-3xl group-hover:bg-primary/10 transition-colors">
                             </div>
-                            <div class="flex flex-col h-full justify-between gap-6 relative z-10">
-                                <div class="flex justify-between items-start">
-                                    <div class="p-3 rounded-2xl bg-primary/10 text-primary">
-                                        <span class="material-symbols-outlined text-3xl">calendar_month</span>
+                            <div
+                                class="flex flex-col h-full justify-center md:justify-between items-center md:items-stretch gap-1 md:gap-6 relative z-10">
+                                <div class="flex justify-center md:justify-between items-start w-full">
+                                    <div class="p-2 md:p-3 rounded-xl md:rounded-2xl bg-primary/10 text-primary">
+                                        <span
+                                            class="material-symbols-outlined text-2xl md:text-3xl">calendar_month</span>
                                     </div>
                                     <span
-                                        class="text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-500 px-3 py-1 rounded-full">Mes</span>
+                                        class="hidden md:block text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-500 px-3 py-1 rounded-full">Mes</span>
                                 </div>
-                                <div>
+                                <div class="text-center md:text-left">
                                     <h3 id="statMonth"
-                                        class="text-5xl font-black text-slate-900 dark:text-white tracking-tighter mb-1">
+                                        class="text-xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tighter mb-0 md:mb-1">
                                         S/ 0.00</h3>
-                                    <p class="text-slate-500 dark:text-slate-400 font-bold text-sm">Acumulado Mensual
-                                    </p>
+                                    <p class="hidden md:block text-slate-500 dark:text-slate-400 font-bold text-sm">
+                                        Acumulado Mensual</p>
                                 </div>
                             </div>
                         </div>
 
                         <!-- CARD: TOTAL HISTÓRICO -->
                         <div
-                            class="bg-white dark:bg-[#151024] rounded-[2rem] p-8 shadow-premium hover:shadow-premium-hover transition-all duration-300 group cursor-default relative overflow-hidden border border-slate-100 dark:border-slate-800">
+                            class="bg-white dark:bg-[#151024] rounded-xl md:rounded-[2rem] p-2 md:p-8 shadow-premium hover:shadow-premium-hover transition-all duration-300 group cursor-default relative overflow-hidden border border-slate-100 dark:border-slate-800">
                             <div
-                                class="absolute -right-10 -top-10 size-40 bg-blue-500/5 rounded-full blur-3xl group-hover:bg-blue-500/10 transition-colors">
+                                class="absolute -right-10 -top-10 size-20 md:size-40 bg-blue-500/5 rounded-full blur-3xl group-hover:bg-blue-500/10 transition-colors">
                             </div>
-                            <div class="flex flex-col h-full justify-between gap-6 relative z-10">
-                                <div class="flex justify-between items-start">
-                                    <div class="p-3 rounded-2xl bg-blue-50 dark:bg-blue-500/10 text-blue-500">
-                                        <span class="material-symbols-outlined text-3xl">trending_up</span>
+                            <div
+                                class="flex flex-col h-full justify-center md:justify-between items-center md:items-stretch gap-1 md:gap-6 relative z-10">
+                                <div class="flex justify-center md:justify-between items-start w-full">
+                                    <div
+                                        class="p-2 md:p-3 rounded-xl md:rounded-2xl bg-blue-50 dark:bg-blue-500/10 text-blue-500">
+                                        <span class="material-symbols-outlined text-2xl md:text-3xl">trending_up</span>
                                     </div>
                                     <span
-                                        class="text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-500 px-3 py-1 rounded-full">Total</span>
+                                        class="hidden md:block text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-500 px-3 py-1 rounded-full">Total</span>
                                 </div>
-                                <div>
+                                <div class="text-center md:text-left">
                                     <h3 id="statTotal"
-                                        class="text-5xl font-black text-slate-900 dark:text-white tracking-tighter mb-1">
+                                        class="text-xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tighter mb-0 md:mb-1">
                                         S/ 0.00</h3>
-                                    <p class="text-slate-500 dark:text-slate-400 font-bold text-sm">Total Histórico</p>
+                                    <p class="hidden md:block text-slate-500 dark:text-slate-400 font-bold text-sm">
+                                        Total Histórico</p>
                                 </div>
                             </div>
                         </div>
@@ -326,6 +359,33 @@
         }
     </script>
     <script src="../js/user.js"></script>
+
+    <!-- Sidebar Logic -->
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            if (sidebar.classList.contains('hidden')) {
+                sidebar.classList.remove('hidden');
+                sidebar.classList.add('mobile-active');
+            } else {
+                sidebar.classList.add('hidden');
+                sidebar.classList.remove('mobile-active');
+            }
+        }
+
+        window.addEventListener('resize', () => {
+            if (window.innerWidth >= 768) {
+                const sidebar = document.getElementById('sidebar');
+                sidebar.classList.remove('hidden');
+                sidebar.classList.remove('mobile-active');
+            } else {
+                const sidebar = document.getElementById('sidebar');
+                if (!sidebar.classList.contains('mobile-active')) {
+                    sidebar.classList.add('hidden');
+                }
+            }
+        });
+    </script>
 
 </body>
 
