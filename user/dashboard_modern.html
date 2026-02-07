@@ -154,7 +154,7 @@
                 class="md:hidden flex items-center justify-between p-4 bg-white dark:bg-[#0f0a19] border-b border-slate-200 dark:border-slate-800 shrink-0 sticky top-0 z-40">
                 <div class="font-black text-xl bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent">
                     YapeUser</div>
-
+                <div id="headerUserName" class="text-sm font-bold text-slate-500">Hola...</div>
             </header>
 
             <div class="flex-1 overflow-y-auto p-6 md:p-12 scroll-smooth">
@@ -163,10 +163,17 @@
                     <!-- Header Component -->
                     <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
                         <div class="flex flex-col gap-2">
+                            <!-- Desktop Title -->
                             <h1 id="welcomeMsg"
-                                class="text-2xl md:text-5xl font-black tracking-tight text-slate-900 dark:text-white leading-tight">
+                                class="hidden md:block text-2xl md:text-5xl font-black tracking-tight text-slate-900 dark:text-white leading-tight">
                                 Hola, Usuario</h1>
-                            <p class="text-slate-500 dark:text-slate-400 text-lg font-medium flex items-center gap-2">
+                            <!-- Mobile Title -->
+                            <h1
+                                class="md:hidden text-2xl font-black tracking-tight text-slate-900 dark:text-white leading-tight">
+                                Reportes</h1>
+
+                            <p
+                                class="hidden md:flex text-slate-500 dark:text-slate-400 text-lg font-medium items-center gap-2">
                                 <span class="size-2 rounded-full bg-green-500 animate-pulse"></span>
                                 Tus reportes financieros al día
                             </p>
@@ -281,8 +288,9 @@
                         </div>
 
                         <!-- Collapsible Filter Panel (Floating Overlay) -->
+                        <!-- Collapsible Filter Panel (Fixed Overlay) -->
                         <div id="filterPanel"
-                            class="hidden absolute right-0 top-14 z-20 w-full md:w-[350px] bg-white dark:bg-[#151024] p-5 rounded-2xl shadow-2xl border border-slate-100 dark:border-slate-700 origin-top-right transition-all animate-[fadeIn_0.2s_ease-out]">
+                            class="hidden fixed top-20 right-4 z-50 w-[85%] md:w-[350px] bg-white dark:bg-[#151024] p-5 rounded-2xl shadow-2xl border border-slate-100 dark:border-slate-700 origin-top-right transition-all animate-[fadeIn_0.2s_ease-out] max-h-[70vh] overflow-y-auto">
                             <div class="flex justify-between items-center mb-4">
                                 <h3 class="font-bold text-slate-900 dark:text-white flex items-center gap-2">
                                     <span class="material-symbols-outlined text-primary">filter_alt</span>

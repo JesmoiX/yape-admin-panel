@@ -34,6 +34,8 @@ let dateRange = { start: null, end: null };
 if (currentUser && currentUser.role === 'user') {
     if (userDeviceBadge) userDeviceBadge.textContent = "Dispositivo: " + (currentUser.deviceCode || 'Sin Asignar');
     if (welcomeMsg) welcomeMsg.textContent = "Hola, " + currentUser.username;
+    const headerUserName = document.getElementById('headerUserName');
+    if (headerUserName) headerUserName.textContent = "Hola " + currentUser.username;
 
     // Initialize Floatpickr
     if (dateFilterInput) {
