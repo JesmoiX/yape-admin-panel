@@ -195,7 +195,10 @@ function renderDevices() {
         return;
     }
 
-    const devices = Object.values(devicesData);
+    const devices = Object.entries(devicesData).map(([key, value]) => ({
+        ...value,
+        code: value.code || key // Fallback to key if code is missing
+    }));
     if (devices.length === 0) {
         tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 2rem;">No hay dispositivos registrados</td></tr>';
         return;
@@ -533,7 +536,10 @@ window.showCreateUserModal = function () {
 
     deviceSelect.innerHTML = '<option value="">-- Seleccionar Dispositivo --</option>';
 
-    const devices = Object.values(devicesData || {});
+    const devices = Object.entries(devicesData || {}).map(([key, value]) => ({
+        ...value,
+        code: value.code || key
+    }));
     console.log("Devices Data:", devices);
 
     if (devices.length === 0) {
@@ -543,10 +549,25 @@ window.showCreateUserModal = function () {
 
     // Modificado: Mostrar TODOS los dispositivos (Pending/Approved/Rejected)
     // Para que aparezcan directamente al crear usuario
-    const availableDevices = devices;
+    // Filter: Show ONLY 'Online' and 'Pending' (Unassigned) devices
+    // User Requirement: "equipos desconectados no deben aparecer en la lista, solo los pendientes"
+    const now = Date.now();
 
-    // Sort logic (optional): Pending first?
-    availableDevices.sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
+    // devices is array of values. We need code fallback inside filter? 
+    // showCreateUserModal uses 'devices' from line 526 which is 'Object.values'.
+    // Be safer to use mapped devices like renderDevices or just checking code.
+
+    const validDevices = devices.filter(d => {
+        const lastHb = d.last_heartbeat || 0;
+        const isOnline = (now - lastHb) < 60000; // 60s tolerance
+        const isAssigned = assignedCodes.includes(d.code); // Check if assigned
+
+        // Show if Online AND Not Assigned
+        return isOnline && !isAssigned;
+    });
+
+    const availableDevices = validDevices;
+    availableDevices.sort((a, b) => (b.last_heartbeat || 0) - (a.last_heartbeat || 0));
 
     const assignedCodes = Object.values(usersData || {}).map(u => u.deviceCode);
 
