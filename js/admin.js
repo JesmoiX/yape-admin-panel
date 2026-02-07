@@ -259,9 +259,13 @@ function renderDevices() {
         tr.innerHTML = `
             <td class="px-6 py-4 font-mono font-bold text-slate-900 dark:text-white">${device.code}</td>
             <td class="px-6 py-4">
-                <div class="font-medium text-slate-900 dark:text-white" title="${device.model || ''}">${device.deviceName || device.model || 'Unknown'}</div>
-                ${(device.deviceName && device.deviceName !== device.model) ? `<div class="text-[10px] text-slate-400 font-mono">${device.model}</div>` : ''}
-                <div class="text-xs text-slate-500 dark:text-slate-400">${device.manufacturer || ''}</div>
+                <div class="font-medium text-slate-900 dark:text-white" title="${device.model || ''}">
+                    ${device.deviceName || device.model || 'Unknown'}
+                </div>
+                <div class="flex items-center gap-2 mt-0.5">
+                    <span class="text-[10px] text-slate-500 font-mono">${device.manufacturer || ''} ${device.deviceName !== device.model ? device.model : ''}</span>
+                    ${device.androidVersion ? `<span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-slate-200 text-slate-600 dark:bg-slate-700 dark:text-slate-300">Android ${device.androidVersion}</span>` : ''}
+                </div>
             </td>
             <td class="px-6 py-4">${statusBadge}</td>
             <td class="px-6 py-4 text-slate-600 dark:text-slate-400">${date}</td>
