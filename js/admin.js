@@ -562,6 +562,8 @@ window.showCreateUserModal = function () {
     // showCreateUserModal uses 'devices' from line 526 which is 'Object.values'.
     // Be safer to use mapped devices like renderDevices or just checking code.
 
+    const assignedCodes = Object.values(usersData || {}).map(u => u.deviceCode);
+
     const validDevices = devices.filter(d => {
         const lastHb = d.last_heartbeat || 0;
         const isOnline = (now - lastHb) < 60000; // 60s tolerance
@@ -574,10 +576,15 @@ window.showCreateUserModal = function () {
     const availableDevices = validDevices;
     availableDevices.sort((a, b) => (b.last_heartbeat || 0) - (a.last_heartbeat || 0));
 
-    const assignedCodes = Object.values(usersData || {}).map(u => u.deviceCode);
-
     if (availableDevices.length === 0) {
-        alert("No hay dispositivos registrados.");
+        const total = devices.length;
+        const online = devices.filter(d => (now - (d.last_heartbeat || 0)) < 60000).length;
+        const assigned = devices.filter(d => assignedCodes.includes(d.code)).length;
+
+        let msg = "No hay dispositivos disponibles para asignar.\n";
+        msg += `Total Registrados: ${total}\nOnline (Login Screen): ${online}\nAsignados: ${assigned}\n\n`;
+        msg += "Asegúrate de que la App Android esté abierta en la pantalla de Login y diga 'Esperando Login...' en la lista principal.";
+        alert(msg);
         return;
     }
 
