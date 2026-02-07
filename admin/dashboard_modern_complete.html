@@ -230,31 +230,34 @@
 
             <!-- Mobile Header -->
             <header
-                class="md:hidden flex items-center justify-between p-6 bg-white dark:bg-[#0f0a19] border-b border-slate-200 dark:border-slate-800 shrink-0">
-                <div class="font-black text-2xl bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent">
+                class="md:hidden flex items-center justify-between p-4 bg-white dark:bg-[#0f0a19] border-b border-slate-200 dark:border-slate-800 shrink-0 sticky top-0 z-40">
+                <div class="font-black text-xl bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent">
                     YapeAdmin</div>
                 <button
-                    class="text-slate-500 bg-slate-100 dark:bg-slate-800 p-2 rounded-lg hover:bg-slate-200 transition-colors"
-                    onclick="toggleSidebar()">
-                    <span class="material-symbols-outlined text-2xl">menu</span>
+                    class="text-slate-500 bg-slate-100 dark:bg-slate-800 p-2 rounded-lg hover:bg-slate-200 transition-colors relative z-50"
+                    onclick="toggleSidebar(); console.log('Menu clicked')">
+                    <span class="material-symbols-outlined text-xl">menu</span>
                 </button>
             </header>
 
-            <div class="flex-1 overflow-y-auto p-6 md:p-12 scroll-smooth">
-                <div class="max-w-[1600px] mx-auto flex flex-col gap-10">
+            <div class="flex-1 overflow-y-auto p-4 md:p-12 scroll-smooth">
+                <div class="max-w-[1600px] mx-auto flex flex-col gap-4 md:gap-10">
 
-                    <!-- Header Component -->
-                    <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
-                        <div class="flex flex-col gap-2">
-                            <h1 class="text-4xl md:text-5xl font-black tracking-tight text-slate-900 dark:text-white">
+                    <!-- Header Component (Compact Mobile) -->
+                    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+                        <div class="flex flex-col gap-1">
+                            <h1
+                                class="text-2xl md:text-5xl font-black tracking-tight text-slate-900 dark:text-white leading-tight">
                                 Panel de Control</h1>
-                            <p class="text-slate-500 dark:text-slate-400 text-lg font-medium flex items-center gap-2">
+                            <p
+                                class="text-slate-500 dark:text-slate-400 text-xs md:text-lg font-medium flex items-center gap-2">
                                 <span class="size-2 rounded-full bg-green-500 animate-pulse"></span>
-                                Sistema monitoreando en tiempo real
+                                Sistema en tiempo real
                             </p>
                         </div>
+                        <!-- Hide Welcome Card on extra small mobile to save space, show on larger -->
                         <div
-                            class="flex items-center gap-3 bg-white dark:bg-[#151024] p-2 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800">
+                            class="hidden sm:flex items-center gap-3 bg-white dark:bg-[#151024] p-2 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800">
                             <div
                                 class="size-10 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500">
                                 <span class="material-symbols-outlined">admin_panel_settings</span>
@@ -270,29 +273,30 @@
                     <!-- VIEW: DASHBOARD -->
                     <!-- ======================================================= -->
                     <div id="view-dashboard">
-                        <!-- Stats Grid -->
-                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                        <!-- Stats Grid (Compact 2 cols on mobile) -->
+                        <div class="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6 mb-6">
 
                             <!-- CARD: DISPOSITIVOS PENDIENTES -->
                             <div
-                                class="bg-white dark:bg-[#151024] rounded-[2rem] p-8 shadow-premium hover:shadow-premium-hover transition-all duration-300 group cursor-default relative overflow-hidden border border-slate-100 dark:border-slate-800">
+                                class="bg-white dark:bg-[#151024] rounded-2xl md:rounded-[2rem] p-4 md:p-8 shadow-premium hover:shadow-premium-hover transition-all duration-300 group cursor-default relative overflow-hidden border border-slate-100 dark:border-slate-800">
                                 <div
-                                    class="absolute -right-10 -top-10 size-40 bg-amber-500/5 rounded-full blur-3xl group-hover:bg-amber-500/10 transition-colors">
+                                    class="absolute -right-10 -top-10 size-20 md:size-40 bg-amber-500/5 rounded-full blur-3xl group-hover:bg-amber-500/10 transition-colors">
                                 </div>
-                                <div class="flex flex-col h-full justify-between gap-6 relative z-10">
+                                <div class="flex flex-col h-full justify-between gap-3 md:gap-6 relative z-10">
                                     <div class="flex justify-between items-start">
-                                        <div class="p-3 rounded-2xl bg-amber-50 dark:bg-amber-500/10 text-amber-500">
-                                            <span class="material-symbols-outlined text-3xl">warning</span>
+                                        <div
+                                            class="p-2 md:p-3 rounded-xl md:rounded-2xl bg-amber-50 dark:bg-amber-500/10 text-amber-500">
+                                            <span class="material-symbols-outlined text-xl md:text-3xl">warning</span>
                                         </div>
                                         <span id="dashboardPendingBadge"
-                                            class="text-xs font-bold bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 px-3 py-1 rounded-full">Acción
-                                            Requerida</span>
+                                            class="text-[10px] md:text-xs font-bold bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 px-2 py-0.5 rounded-full">Acción</span>
                                     </div>
                                     <div>
                                         <h3 id="dashboardPendingCount"
-                                            class="text-5xl font-black text-slate-900 dark:text-white tracking-tighter mb-1">
+                                            class="text-2xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tighter mb-0 md:mb-1">
                                             0</h3>
-                                        <p class="text-slate-500 dark:text-slate-400 font-bold text-sm">Dispositivos
+                                        <p
+                                            class="text-slate-500 dark:text-slate-400 font-bold text-[10px] md:text-sm leading-tight">
                                             Pendientes</p>
                                     </div>
                                 </div>
@@ -300,23 +304,26 @@
 
                             <!-- CARD: TOTAL DISPOSITIVOS -->
                             <div
-                                class="bg-white dark:bg-[#151024] rounded-[2rem] p-8 shadow-premium hover:shadow-premium-hover transition-all duration-300 group cursor-default relative overflow-hidden border border-slate-100 dark:border-slate-800">
+                                class="bg-white dark:bg-[#151024] rounded-2xl md:rounded-[2rem] p-4 md:p-8 shadow-premium hover:shadow-premium-hover transition-all duration-300 group cursor-default relative overflow-hidden border border-slate-100 dark:border-slate-800">
                                 <div
-                                    class="absolute -right-10 -top-10 size-40 bg-primary/5 rounded-full blur-3xl group-hover:bg-primary/10 transition-colors">
+                                    class="absolute -right-10 -top-10 size-20 md:size-40 bg-primary/5 rounded-full blur-3xl group-hover:bg-primary/10 transition-colors">
                                 </div>
-                                <div class="flex flex-col h-full justify-between gap-6 relative z-10">
+                                <div class="flex flex-col h-full justify-between gap-3 md:gap-6 relative z-10">
                                     <div class="flex justify-between items-start">
-                                        <div class="p-3 rounded-2xl bg-primary/10 text-primary">
-                                            <span class="material-symbols-outlined text-3xl">smartphone</span>
+                                        <div class="p-2 md:p-3 rounded-xl md:rounded-2xl bg-primary/10 text-primary">
+                                            <span
+                                                class="material-symbols-outlined text-xl md:text-3xl">smartphone</span>
                                         </div>
                                         <span
-                                            class="text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-500 px-3 py-1 rounded-full">Total</span>
+                                            class="text-[10px] md:text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-500 px-2 md:px-3 py-1 rounded-full">Total</span>
                                     </div>
                                     <div>
                                         <h3 id="dashboardTotalDevices"
-                                            class="text-5xl font-black text-slate-900 dark:text-white tracking-tighter mb-1">
+                                            class="text-2xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tighter mb-0 md:mb-1">
                                             0</h3>
-                                        <p class="text-slate-500 dark:text-slate-400 font-bold text-sm">Dispositivos
+                                        <p
+                                            class="text-slate-500 dark:text-slate-400 font-bold text-[10px] md:text-sm leading-tight">
+                                            Dispositivos
                                             Registrados</p>
                                     </div>
                                 </div>
@@ -324,23 +331,26 @@
 
                             <!-- CARD: USUARIOS WEB -->
                             <div
-                                class="bg-white dark:bg-[#151024] rounded-[2rem] p-8 shadow-premium hover:shadow-premium-hover transition-all duration-300 group cursor-default relative overflow-hidden border border-slate-100 dark:border-slate-800">
+                                class="bg-white dark:bg-[#151024] rounded-2xl md:rounded-[2rem] p-4 md:p-8 shadow-premium hover:shadow-premium-hover transition-all duration-300 group cursor-default relative overflow-hidden border border-slate-100 dark:border-slate-800">
                                 <div
-                                    class="absolute -right-10 -top-10 size-40 bg-green-500/5 rounded-full blur-3xl group-hover:bg-green-500/10 transition-colors">
+                                    class="absolute -right-10 -top-10 size-20 md:size-40 bg-green-500/5 rounded-full blur-3xl group-hover:bg-green-500/10 transition-colors">
                                 </div>
-                                <div class="flex flex-col h-full justify-between gap-6 relative z-10">
+                                <div class="flex flex-col h-full justify-between gap-3 md:gap-6 relative z-10">
                                     <div class="flex justify-between items-start">
-                                        <div class="p-3 rounded-2xl bg-green-50 dark:bg-green-500/10 text-green-500">
-                                            <span class="material-symbols-outlined text-3xl">group</span>
+                                        <div
+                                            class="p-2 md:p-3 rounded-xl md:rounded-2xl bg-green-50 dark:bg-green-500/10 text-green-500">
+                                            <span class="material-symbols-outlined text-xl md:text-3xl">group</span>
                                         </div>
                                         <span
-                                            class="text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-500 px-3 py-1 rounded-full">Clientes</span>
+                                            class="text-[10px] md:text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-500 px-2 md:px-3 py-1 rounded-full">Clientes</span>
                                     </div>
                                     <div>
                                         <h3 id="dashboardTotalUsers"
-                                            class="text-5xl font-black text-slate-900 dark:text-white tracking-tighter mb-1">
+                                            class="text-2xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tighter mb-0 md:mb-1">
                                             0</h3>
-                                        <p class="text-slate-500 dark:text-slate-400 font-bold text-sm">Usuarios Web
+                                        <p
+                                            class="text-slate-500 dark:text-slate-400 font-bold text-[10px] md:text-sm leading-tight">
+                                            Usuarios Web
                                             Activos</p>
                                     </div>
                                 </div>
@@ -350,15 +360,17 @@
 
                         <!-- Recent Payments -->
                         <div
-                            class="bg-white dark:bg-[#151024] rounded-[2.5rem] shadow-premium overflow-hidden p-6 border border-slate-100 dark:border-slate-800">
-                            <div class="flex items-center justify-between px-4 mb-6">
+                            class="bg-white dark:bg-[#151024] rounded-2xl md:rounded-[2.5rem] shadow-premium overflow-hidden p-4 md:p-6 border border-slate-100 dark:border-slate-800">
+                            <div class="flex items-center justify-between px-2 md:px-4 mb-4 md:mb-6">
                                 <div>
-                                    <h2 class="text-2xl font-black text-slate-900 dark:text-white">Últimos Pagos</h2>
-                                    <p class="text-slate-500 text-sm font-medium">Transacciones recibidas en tiempo real
+                                    <h2 class="text-lg md:text-2xl font-black text-slate-900 dark:text-white">Últimos
+                                        Pagos</h2>
+                                    <p class="text-slate-500 text-[10px] md:text-sm font-medium">Transacciones en tiempo
+                                        real
                                     </p>
                                 </div>
                                 <button onclick="switchTab('reports')"
-                                    class="text-sm font-bold text-primary hover:text-accent transition-colors px-4 py-2 bg-primary/5 rounded-xl">Ver
+                                    class="text-xs md:text-sm font-bold text-primary hover:text-accent transition-colors px-3 py-2 bg-primary/5 rounded-xl">Ver
                                     Todos</button>
                             </div>
                             <div class="overflow-x-auto">
