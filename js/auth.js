@@ -29,41 +29,54 @@ if (loginForm) {
             // 2. Check Database Users
             const db = firebase.database();
             // Use once() to check if user exists
-            db.ref('users').once('value').then((snapshot) => {
-                const users = snapshot.val() || {};
-                const inputUserLower = username.trim().toLowerCase();
+            // OPTIMIZED LOGIN STRATEGY:
+            // 1. Try Uppercase Key (Standard for new users)
+            // 2. Try Exact Key (Legacy compatibility)
 
-                // Find matching user key (case-insensitive)
-                const matchedKey = Object.keys(users).find(k => k.toLowerCase() === inputUserLower);
+            const inputUser = username.trim();
+            const upperUser = inputUser.toUpperCase();
 
-                if (matchedKey) {
-                    const userData = users[matchedKey];
-
-                    const userStatus = userData.status || (userData.active ? 'active' : 'inactive');
-                    if (userStatus !== 'active') {
-                        showError("⛔ Cuenta suspendida o inactiva. Contacte al soporte.");
-                        return;
-                    }
-
-                    // Simple password check (plaintext)
-                    if (userData.password === password) {
-                        localStorage.setItem('yape_user', JSON.stringify({
-                            role: 'user',
-                            username: userData.username, // Maintain original case from DB (likely Uppercase now)
-                            deviceCode: userData.deviceCode,
-                            token: 'user_token_' + Date.now(),
-                            password: userData.password
-                        }));
-                        window.location.href = 'user/dashboard_modern.html';
-                    } else {
-                        showError("Contraseña incorrecta");
-                    }
+            // Try Uppercase (Fast path)
+            db.ref('users/' + upperUser).once('value').then((snap) => {
+                if (snap.exists()) {
+                    handleLoginSuccess(snap.val());
                 } else {
-                    showError("Usuario no encontrado o credenciales incorrectas");
+                    // Try Exact Match (Legacy path)
+                    if (inputUser !== upperUser) {
+                        db.ref('users/' + inputUser).once('value').then((snap2) => {
+                            if (snap2.exists()) {
+                                handleLoginSuccess(snap2.val());
+                            } else {
+                                showError("Usuario no encontrado o credenciales incorrectas");
+                            }
+                        });
+                    } else {
+                        showError("Usuario no encontrado o credenciales incorrectas");
+                    }
                 }
             }).catch((error) => {
                 showError("Error de conexión: " + error.message);
             });
+
+            function handleLoginSuccess(userData) {
+                const userStatus = userData.status || (userData.active ? 'active' : 'inactive');
+                if (userStatus !== 'active') {
+                    showError("⛔ Cuenta suspendida o inactiva. Contacte al soporte.");
+                    return;
+                }
+                if (userData.password === password) {
+                    localStorage.setItem('yape_user', JSON.stringify({
+                        role: 'user',
+                        username: userData.username,
+                        deviceCode: userData.deviceCode,
+                        token: 'user_token_' + Date.now(),
+                        password: userData.password
+                    }));
+                    window.location.href = 'user/dashboard_modern.html';
+                } else {
+                    showError("Contraseña incorrecta");
+                }
+            }
 
         } catch (error) {
             console.error(error);
