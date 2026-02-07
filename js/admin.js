@@ -227,8 +227,18 @@ function renderDevices() {
                 statusBadge = '<span class="px-3 py-1 rounded-full text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-500">Inactivo</span>';
             }
         } else {
-            // No user assigned -> Always Pending visually
-            statusBadge = '<span class="px-3 py-1 rounded-full text-xs font-bold bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400">Pendiente</span>';
+            // No user assigned -> Pending logic with Heartbeat
+            const now = Date.now();
+            const lastHeartbeat = device.last_heartbeat || 0;
+            const isOnline = (now - lastHeartbeat) < 45000; // 45s tolerance
+
+            if (isOnline) {
+                // Active Pending (Waiting on Login Screen)
+                statusBadge = '<span class="px-3 py-1 rounded-full text-xs font-bold bg-amber-500 text-white animate-pulse shadow-lg shadow-amber-500/30">Esperando Login...</span>';
+            } else {
+                // Inactive Pending (App closed or uninstalled)
+                statusBadge = '<span class="px-3 py-1 rounded-full text-xs font-bold bg-slate-200 dark:bg-slate-800 text-slate-400">Desconectado</span>';
+            }
         }
 
         // Refine User Display if no user
