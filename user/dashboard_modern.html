@@ -260,85 +260,109 @@
 
                     </div>
 
-                    <!-- Filters Card -->
-                    <div
-                        class="bg-white dark:bg-[#151024] rounded-[2.5rem] p-8 shadow-premium border border-slate-100 dark:border-slate-800">
-                        <h2 class="text-xl font-black text-slate-900 dark:text-white mb-6">Filtros de Búsqueda</h2>
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-end">
-                            <div>
-                                <label
-                                    class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Rango
-                                    de Fechas</label>
-                                <div class="relative">
-                                    <span
-                                        class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">calendar_today</span>
-                                    <input id="dateFilter"
-                                        class="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 pl-10 pr-4 py-3 text-sm font-medium focus:ring-primary focus:border-primary transition-all"
-                                        placeholder="Seleccionar...">
-                                </div>
-                            </div>
-                            <div>
-                                <label
-                                    class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Nombre
-                                    Remitente</label>
-                                <div class="relative">
-                                    <span
-                                        class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">person</span>
-                                    <input type="text" id="nameFilter"
-                                        class="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 pl-10 pr-4 py-3 text-sm font-medium focus:ring-primary focus:border-primary transition-all"
-                                        placeholder="Ej: Juan">
-                                </div>
-                            </div>
-                            <div>
-                                <label
-                                    class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Monto
-                                    Mínimo</label>
-                                <div class="relative">
-                                    <span
-                                        class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">payments</span>
-                                    <input type="number" id="minAmountFilter"
-                                        class="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 pl-10 pr-4 py-3 text-sm font-medium focus:ring-primary focus:border-primary transition-all"
-                                        placeholder="0.00">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <!-- Payments History Section (Clean Layout) -->
+                    <div class="mt-2 md:mt-8 relative">
 
-                    <!-- Payments Table -->
-                    <div
-                        class="bg-white dark:bg-[#151024] rounded-[2.5rem] shadow-premium overflow-hidden p-6 border border-slate-100 dark:border-slate-800">
-                        <div class="flex items-center justify-between px-4 mb-6">
+                        <!-- Header with integrated Filter Toggle -->
+                        <div class="flex items-center justify-between mb-4 pl-1 pr-1">
                             <div>
-                                <h2 class="text-2xl font-black text-slate-900 dark:text-white">Historial de Pagos</h2>
-                                <p class="text-slate-500 text-sm font-medium">Todas tus transacciones registradas</p>
+                                <h2 class="text-xl md:text-2xl font-black text-slate-900 dark:text-white">Historial de
+                                    Pagos</h2>
+                                <p class="hidden md:block text-slate-500 text-sm font-medium">Todas tus transacciones
+                                    registradas</p>
                             </div>
-                            <span id="resultsCount"
-                                class="text-xs font-bold bg-slate-100 dark:bg-slate-800 px-3 py-1 rounded-full text-slate-500">0
-                                registros</span>
+
+                            <div class="flex items-center gap-2 md:gap-4">
+                                <span id="resultsCount"
+                                    class="text-[10px] md:text-xs font-bold bg-slate-200 dark:bg-slate-800 px-2 md:px-3 py-1 rounded-full text-slate-500">0
+                                    reg.</span>
+
+                                <button onclick="toggleFilters()"
+                                    class="p-2 md:p-3 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm text-slate-500 hover:text-primary transition-all active:scale-95 z-30 relative">
+                                    <span class="material-symbols-outlined text-xl md:text-2xl">filter_list</span>
+                                </button>
+                            </div>
                         </div>
-                        <div class="overflow-x-auto">
+
+                        <!-- Collapsible Filter Panel (Floating Overlay) -->
+                        <div id="filterPanel"
+                            class="hidden absolute right-0 top-14 z-20 w-full md:w-[350px] bg-white dark:bg-[#151024] p-5 rounded-2xl shadow-2xl border border-slate-100 dark:border-slate-700 origin-top-right transition-all animate-[fadeIn_0.2s_ease-out]">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-primary">filter_alt</span>
+                                    Filtros
+                                </h3>
+                                <button onclick="toggleFilters()" class="text-slate-400 hover:text-red-500"><span
+                                        class="material-symbols-outlined">close</span></button>
+                            </div>
+
+                            <div class="flex flex-col gap-3">
+                                <!-- Date -->
+                                <div>
+                                    <label
+                                        class="text-[10px] font-bold text-slate-400 uppercase mb-1 block">Fecha</label>
+                                    <div class="relative">
+                                        <span
+                                            class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">calendar_today</span>
+                                        <input id="dateFilter"
+                                            class="w-full rounded-xl bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700 pl-9 p-2.5 text-sm font-medium focus:ring-primary focus:border-primary"
+                                            placeholder="Seleccionar fecha...">
+                                    </div>
+                                </div>
+                                <!-- Sender -->
+                                <div>
+                                    <label
+                                        class="text-[10px] font-bold text-slate-400 uppercase mb-1 block">Remitente</label>
+                                    <div class="relative">
+                                        <span
+                                            class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">person</span>
+                                        <input id="nameFilter"
+                                            class="w-full rounded-xl bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700 pl-9 p-2.5 text-sm font-medium focus:ring-primary focus:border-primary"
+                                            placeholder="Nombre...">
+                                    </div>
+                                </div>
+                                <!-- Amount -->
+                                <div>
+                                    <label class="text-[10px] font-bold text-slate-400 uppercase mb-1 block">Monto
+                                        Min</label>
+                                    <div class="relative">
+                                        <span
+                                            class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm">payments</span>
+                                        <input id="minAmountFilter" type="number"
+                                            class="w-full rounded-xl bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700 pl-9 p-2.5 text-sm font-medium focus:ring-primary focus:border-primary"
+                                            placeholder="0.00">
+                                    </div>
+                                </div>
+
+                                <button onclick="toggleFilters()"
+                                    class="mt-2 w-full py-3 bg-primary text-white rounded-xl font-bold shadow-lg shadow-primary/30 active:scale-95 transition-transform">Listo</button>
+                            </div>
+                        </div>
+
+                        <!-- Table (No Container, Clean Look) -->
+                        <div class="overflow-hidden">
                             <table class="w-full text-left border-collapse">
-                                <thead>
-                                    <tr class="bg-slate-50 dark:bg-slate-900/50">
+                                <thead class="border-b border-slate-200 dark:border-slate-800">
+                                    <tr>
                                         <th
-                                            class="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-widest rounded-l-2xl">
-                                            Fecha y Hora</th>
+                                            class="px-2 md:px-6 py-3 text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-widest">
+                                            Fecha</th>
                                         <th
-                                            class="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-widest">
+                                            class="px-2 md:px-6 py-3 text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-widest">
                                             Remitente</th>
                                         <th
-                                            class="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-widest rounded-r-2xl">
+                                            class="px-2 md:px-6 py-3 text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-widest text-right">
                                             Monto</th>
                                     </tr>
                                 </thead>
-                                <tbody id="paymentsTableBody" class="divide-y divide-slate-50 dark:divide-slate-800/30">
-                                    <tr>
-                                        <td colspan="3" class="px-6 py-8 text-center text-slate-400">Cargando...</td>
-                                    </tr>
+                                <tbody id="paymentsTableBody"
+                                    class="divide-y divide-slate-100 dark:divide-slate-800/50">
+                                    <!-- Filled by JS -->
                                 </tbody>
                             </table>
                         </div>
                     </div>
+
 
                 </div>
             </div>
@@ -360,8 +384,13 @@
     </script>
     <script src="../js/user.js"></script>
 
-    <!-- Sidebar Logic -->
+    <!-- Sidebar & Filter Logic -->
     <script>
+        function toggleFilters() {
+            const panel = document.getElementById('filterPanel');
+            panel.classList.toggle('hidden');
+        }
+
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
             if (sidebar.classList.contains('hidden')) {
