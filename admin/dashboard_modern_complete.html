@@ -273,30 +273,32 @@
                     <!-- VIEW: DASHBOARD -->
                     <!-- ======================================================= -->
                     <div id="view-dashboard">
-                        <!-- Stats Grid (Compact 2 cols on mobile) -->
-                        <div class="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6 mb-6">
+                        <!-- Stats Grid (Ultra Compact Mobile: 3 Cols, Icon + Number only) -->
+                        <div class="grid grid-cols-3 gap-2 md:gap-6 mb-4 md:mb-8">
 
                             <!-- CARD: DISPOSITIVOS PENDIENTES -->
                             <div
-                                class="bg-white dark:bg-[#151024] rounded-2xl md:rounded-[2rem] p-4 md:p-8 shadow-premium hover:shadow-premium-hover transition-all duration-300 group cursor-default relative overflow-hidden border border-slate-100 dark:border-slate-800">
+                                class="bg-white dark:bg-[#151024] rounded-xl md:rounded-[2rem] p-2 md:p-8 shadow-premium hover:shadow-premium-hover transition-all duration-300 group cursor-default relative overflow-hidden border border-slate-100 dark:border-slate-800">
                                 <div
                                     class="absolute -right-10 -top-10 size-20 md:size-40 bg-amber-500/5 rounded-full blur-3xl group-hover:bg-amber-500/10 transition-colors">
                                 </div>
-                                <div class="flex flex-col h-full justify-between gap-3 md:gap-6 relative z-10">
-                                    <div class="flex justify-between items-start">
+                                <div
+                                    class="flex flex-col h-full justify-center md:justify-between items-center md:items-stretch gap-1 md:gap-6 relative z-10">
+                                    <div class="flex justify-center md:justify-between items-start w-full">
                                         <div
                                             class="p-2 md:p-3 rounded-xl md:rounded-2xl bg-amber-50 dark:bg-amber-500/10 text-amber-500">
-                                            <span class="material-symbols-outlined text-xl md:text-3xl">warning</span>
+                                            <span class="material-symbols-outlined text-2xl md:text-3xl">warning</span>
                                         </div>
                                         <span id="dashboardPendingBadge"
-                                            class="text-[10px] md:text-xs font-bold bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 px-2 py-0.5 rounded-full">Acción</span>
+                                            class="hidden md:block text-xs font-bold bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 px-3 py-1 rounded-full">Acción
+                                            Requerida</span>
                                     </div>
-                                    <div>
+                                    <div class="text-center md:text-left">
                                         <h3 id="dashboardPendingCount"
-                                            class="text-2xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tighter mb-0 md:mb-1">
+                                            class="text-xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tighter mb-0 md:mb-1">
                                             0</h3>
-                                        <p
-                                            class="text-slate-500 dark:text-slate-400 font-bold text-[10px] md:text-sm leading-tight">
+                                        <p class="hidden md:block text-slate-500 dark:text-slate-400 font-bold text-sm">
+                                            Dispositivos
                                             Pendientes</p>
                                     </div>
                                 </div>
@@ -304,25 +306,25 @@
 
                             <!-- CARD: TOTAL DISPOSITIVOS -->
                             <div
-                                class="bg-white dark:bg-[#151024] rounded-2xl md:rounded-[2rem] p-4 md:p-8 shadow-premium hover:shadow-premium-hover transition-all duration-300 group cursor-default relative overflow-hidden border border-slate-100 dark:border-slate-800">
+                                class="bg-white dark:bg-[#151024] rounded-xl md:rounded-[2rem] p-2 md:p-8 shadow-premium hover:shadow-premium-hover transition-all duration-300 group cursor-default relative overflow-hidden border border-slate-100 dark:border-slate-800">
                                 <div
                                     class="absolute -right-10 -top-10 size-20 md:size-40 bg-primary/5 rounded-full blur-3xl group-hover:bg-primary/10 transition-colors">
                                 </div>
-                                <div class="flex flex-col h-full justify-between gap-3 md:gap-6 relative z-10">
-                                    <div class="flex justify-between items-start">
+                                <div
+                                    class="flex flex-col h-full justify-center md:justify-between items-center md:items-stretch gap-1 md:gap-6 relative z-10">
+                                    <div class="flex justify-center md:justify-between items-start w-full">
                                         <div class="p-2 md:p-3 rounded-xl md:rounded-2xl bg-primary/10 text-primary">
                                             <span
-                                                class="material-symbols-outlined text-xl md:text-3xl">smartphone</span>
+                                                class="material-symbols-outlined text-2xl md:text-3xl">smartphone</span>
                                         </div>
                                         <span
-                                            class="text-[10px] md:text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-500 px-2 md:px-3 py-1 rounded-full">Total</span>
+                                            class="hidden md:block text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-500 px-3 py-1 rounded-full">Total</span>
                                     </div>
-                                    <div>
+                                    <div class="text-center md:text-left">
                                         <h3 id="dashboardTotalDevices"
-                                            class="text-2xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tighter mb-0 md:mb-1">
+                                            class="text-xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tighter mb-0 md:mb-1">
                                             0</h3>
-                                        <p
-                                            class="text-slate-500 dark:text-slate-400 font-bold text-[10px] md:text-sm leading-tight">
+                                        <p class="hidden md:block text-slate-500 dark:text-slate-400 font-bold text-sm">
                                             Dispositivos
                                             Registrados</p>
                                     </div>
@@ -331,25 +333,25 @@
 
                             <!-- CARD: USUARIOS WEB -->
                             <div
-                                class="bg-white dark:bg-[#151024] rounded-2xl md:rounded-[2rem] p-4 md:p-8 shadow-premium hover:shadow-premium-hover transition-all duration-300 group cursor-default relative overflow-hidden border border-slate-100 dark:border-slate-800">
+                                class="bg-white dark:bg-[#151024] rounded-xl md:rounded-[2rem] p-2 md:p-8 shadow-premium hover:shadow-premium-hover transition-all duration-300 group cursor-default relative overflow-hidden border border-slate-100 dark:border-slate-800">
                                 <div
                                     class="absolute -right-10 -top-10 size-20 md:size-40 bg-green-500/5 rounded-full blur-3xl group-hover:bg-green-500/10 transition-colors">
                                 </div>
-                                <div class="flex flex-col h-full justify-between gap-3 md:gap-6 relative z-10">
-                                    <div class="flex justify-between items-start">
+                                <div
+                                    class="flex flex-col h-full justify-center md:justify-between items-center md:items-stretch gap-1 md:gap-6 relative z-10">
+                                    <div class="flex justify-center md:justify-between items-start w-full">
                                         <div
                                             class="p-2 md:p-3 rounded-xl md:rounded-2xl bg-green-50 dark:bg-green-500/10 text-green-500">
-                                            <span class="material-symbols-outlined text-xl md:text-3xl">group</span>
+                                            <span class="material-symbols-outlined text-2xl md:text-3xl">group</span>
                                         </div>
                                         <span
-                                            class="text-[10px] md:text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-500 px-2 md:px-3 py-1 rounded-full">Clientes</span>
+                                            class="hidden md:block text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-500 px-3 py-1 rounded-full">Clientes</span>
                                     </div>
-                                    <div>
+                                    <div class="text-center md:text-left">
                                         <h3 id="dashboardTotalUsers"
-                                            class="text-2xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tighter mb-0 md:mb-1">
+                                            class="text-xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tighter mb-0 md:mb-1">
                                             0</h3>
-                                        <p
-                                            class="text-slate-500 dark:text-slate-400 font-bold text-[10px] md:text-sm leading-tight">
+                                        <p class="hidden md:block text-slate-500 dark:text-slate-400 font-bold text-sm">
                                             Usuarios Web
                                             Activos</p>
                                     </div>
