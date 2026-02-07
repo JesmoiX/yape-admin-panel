@@ -29,9 +29,15 @@ if (loginForm) {
             // 2. Check Database Users
             const db = firebase.database();
             // Use once() to check if user exists
-            db.ref('users/' + username).once('value').then((snapshot) => {
-                if (snapshot.exists()) {
-                    const userData = snapshot.val();
+            db.ref('users').once('value').then((snapshot) => {
+                const users = snapshot.val() || {};
+                const inputUserLower = username.trim().toLowerCase();
+
+                // Find matching user key (case-insensitive)
+                const matchedKey = Object.keys(users).find(k => k.toLowerCase() === inputUserLower);
+
+                if (matchedKey) {
+                    const userData = users[matchedKey];
 
                     const userStatus = userData.status || (userData.active ? 'active' : 'inactive');
                     if (userStatus !== 'active') {
@@ -43,10 +49,10 @@ if (loginForm) {
                     if (userData.password === password) {
                         localStorage.setItem('yape_user', JSON.stringify({
                             role: 'user',
-                            username: userData.username,
-                            deviceCode: userData.deviceCode, // Crucial for filtering
+                            username: userData.username, // Maintain original case from DB (likely Uppercase now)
+                            deviceCode: userData.deviceCode,
                             token: 'user_token_' + Date.now(),
-                            password: userData.password // Monitor password changes
+                            password: userData.password
                         }));
                         window.location.href = 'user/dashboard_modern.html';
                     } else {

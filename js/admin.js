@@ -233,7 +233,7 @@ function renderDevices() {
 
         // Refine User Display if no user
         const finalUserDisplay = assignedUser ?
-            `<span class="font-bold text-slate-700 dark:text-slate-300">${assignedUser.username}</span>` :
+            `<span class="font-bold text-slate-700 dark:text-slate-300">${assignedUser.username.toUpperCase()}</span>` :
             `<span class="text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-500 px-2 py-1 rounded">Sin Asignar</span>`;
 
         // Actions: Only "Forget" (Delete)
@@ -333,7 +333,7 @@ function renderUsers() {
         const btnDelete = `<button onclick="deleteUser('${user.username}')" class="px-3 py-2 rounded-lg bg-red-500 hover:bg-red-600 text-white font-bold text-sm transition-all shadow-sm hover:shadow-md flex items-center gap-1" title="Olvidar Usuario">Olvidar</button>`;
 
         tr.innerHTML = `
-            <td class="px-6 py-4 font-bold text-slate-900 dark:text-white">${user.username}</td>
+            <td class="px-6 py-4 font-bold text-slate-900 dark:text-white">${user.username.toUpperCase()}</td>
             <td class="px-6 py-4 font-mono text-slate-600 dark:text-slate-400">${user.deviceCode || '<span class="text-red-400">Sin asignar</span>'}</td>
             <td class="px-6 py-4">${statusBadge}</td>
             <td class="px-6 py-4">
@@ -456,7 +456,7 @@ function populateReportUserSelect() {
     users.forEach(u => {
         const opt = document.createElement('option');
         opt.value = u.deviceCode;
-        opt.textContent = `Usuario: ${u.username} (Disp: ${u.deviceCode || 'Sin Asignar'})`;
+        opt.textContent = `Usuario: ${u.username.toUpperCase()} (Disp: ${u.deviceCode || 'Sin Asignar'})`;
         sel.appendChild(opt);
     });
 }
@@ -490,7 +490,7 @@ window.applyReportFilters = function () {
         const tr = document.createElement('tr');
         const date = new Date(p.timestamp || 0);
         const user = Object.values(usersData).find(u => u.deviceCode === p.deviceCode);
-        const ownerName = user ? user.username : (p.deviceCode || 'N/A');
+        const ownerName = user ? user.username.toUpperCase() : (p.deviceCode || 'N/A');
         tr.innerHTML = `
             <td>${date.toLocaleString()}</td>
             <td>${ownerName}</td>
@@ -584,12 +584,16 @@ window.populateDeviceSelect = window.showCreateUserModal;
 if (createUserForm) {
     createUserForm.addEventListener('submit', (e) => {
         e.preventDefault();
-        const username = document.getElementById('newUsername').value.trim();
+        const usernameVal = document.getElementById('newUsername').value.trim();
+        const username = usernameVal.toUpperCase(); // Force Uppercase
         const password = document.getElementById('newPassword').value.trim();
         const deviceCode = deviceSelect.value;
 
         if (!username || !password || !deviceCode) { alert("Completa todos los campos"); return; }
-        if (usersData[username]) { alert("El usuario ya existe"); return; }
+
+        // Check if user exists (case-insensitive)
+        const userExists = Object.keys(usersData || {}).some(k => k.toUpperCase() === username);
+        if (userExists) { alert("El usuario ya existe"); return; }
 
         const submitBtn = createUserForm.querySelector('button[type="submit"]');
         submitBtn.disabled = true;
