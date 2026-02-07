@@ -154,11 +154,7 @@
                 class="md:hidden flex items-center justify-between p-4 bg-white dark:bg-[#0f0a19] border-b border-slate-200 dark:border-slate-800 shrink-0 sticky top-0 z-40">
                 <div class="font-black text-xl bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent">
                     YapeUser</div>
-                <button
-                    class="text-slate-500 bg-slate-100 dark:bg-slate-800 p-2 rounded-lg hover:bg-slate-200 transition-colors relative z-50"
-                    onclick="toggleSidebar()">
-                    <span class="material-symbols-outlined text-xl">menu</span>
-                </button>
+
             </header>
 
             <div class="flex-1 overflow-y-auto p-6 md:p-12 scroll-smooth">
@@ -384,36 +380,67 @@
     </script>
     <script src="../js/user.js"></script>
 
+    <!-- MOBILE FLOAT MENU (FAB) -->
+    <div class="md:hidden fixed bottom-6 right-6 z-[100] flex flex-col items-end gap-3 group/fab font-display">
+
+        <!-- Options (Hidden by default) -->
+        <div id="fabOptions" class="hidden flex-col items-end gap-3 transition-all animate-[fadeIn_0.2s_ease-out]">
+            <!-- Logout -->
+            <button onclick="logout()"
+                class="flex items-center gap-2 bg-red-500 text-white pl-4 pr-3 py-3 rounded-2xl shadow-lg shadow-red-500/30 transform active:scale-95 transition-all">
+                <span class="text-[10px] font-bold uppercase tracking-widest">Salir</span>
+                <span class="material-symbols-outlined text-xl">logout</span>
+            </button>
+
+            <!-- Refresh/Dashboard -->
+            <button onclick="location.reload()"
+                class="flex items-center gap-2 bg-[#151024] border border-white/10 text-white pl-4 pr-3 py-3 rounded-2xl shadow-lg transform active:scale-95 transition-all">
+                <span class="text-[10px] font-bold uppercase tracking-widest">Inicio</span>
+                <span class="material-symbols-outlined text-xl">dashboard</span>
+            </button>
+        </div>
+
+        <!-- Main Button -->
+        <button onclick="toggleFab()" id="fabMainBtn"
+            class="size-14 rounded-[1.2rem] bg-primary text-white shadow-xl shadow-primary/30 flex items-center justify-center transform transition-transform active:scale-95 z-[110]">
+            <span class="material-symbols-outlined text-3xl transition-transform duration-300" id="fabIcon">menu</span>
+        </button>
+    </div>
+
     <!-- Sidebar & Filter Logic -->
     <script>
+        function toggleFab() {
+            const opts = document.getElementById('fabOptions');
+            const icon = document.getElementById('fabIcon');
+            const btn = document.getElementById('fabMainBtn');
+
+            if (opts.classList.contains('hidden')) {
+                opts.classList.remove('hidden');
+                opts.classList.add('flex');
+                // Animate Icon
+                icon.innerText = 'close';
+                icon.style.transform = 'rotate(90deg)';
+                btn.classList.add('rotate-90');
+                btn.classList.replace('bg-primary', 'bg-slate-900');
+            } else {
+                opts.classList.add('hidden');
+                opts.classList.remove('flex');
+                // Reset Icon
+                icon.innerText = 'menu';
+                icon.style.transform = 'rotate(0deg)';
+                btn.classList.remove('rotate-90');
+                btn.classList.replace('bg-slate-900', 'bg-primary');
+            }
+        }
+
         function toggleFilters() {
             const panel = document.getElementById('filterPanel');
             panel.classList.toggle('hidden');
         }
 
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            if (sidebar.classList.contains('hidden')) {
-                sidebar.classList.remove('hidden');
-                sidebar.classList.add('mobile-active');
-            } else {
-                sidebar.classList.add('hidden');
-                sidebar.classList.remove('mobile-active');
-            }
-        }
-
-        window.addEventListener('resize', () => {
-            if (window.innerWidth >= 768) {
-                const sidebar = document.getElementById('sidebar');
-                sidebar.classList.remove('hidden');
-                sidebar.classList.remove('mobile-active');
-            } else {
-                const sidebar = document.getElementById('sidebar');
-                if (!sidebar.classList.contains('mobile-active')) {
-                    sidebar.classList.add('hidden');
-                }
-            }
-        });
+        // Dummy functions
+        function toggleSidebar() { }
+        function closeSidebarMobile() { }
     </script>
 
 </body>
