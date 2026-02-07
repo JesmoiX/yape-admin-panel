@@ -139,26 +139,27 @@ function renderTable(payments) {
     if (!paymentsTableBody) return;
 
     paymentsTableBody.innerHTML = '';
-    if (resultsCount) resultsCount.textContent = `${payments.length} resultados`;
+    if (resultsCount) resultsCount.textContent = `${payments.length} registros`;
 
     if (payments.length === 0) {
-        paymentsTableBody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding: 2rem;">No se encontraron pagos</td></tr>`;
+        paymentsTableBody.innerHTML = `<tr><td colspan="3" class="px-6 py-8 text-center text-slate-400">No se encontraron pagos</td></tr>`;
         return;
     }
 
-    // Limit to 50 render items to prevent freezing if too many
+    // Limit to 100 render items to prevent freezing if too many
     const toRender = payments.slice(0, 100);
 
     toRender.forEach(p => {
         const tr = document.createElement('tr');
+        tr.className = 'hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors';
 
         const dateObj = new Date(p.timestamp || 0);
         const dateStr = dateObj.toLocaleString();
 
         tr.innerHTML = `
-            <td>${dateStr}</td>
-            <td style="font-weight: 500;">${p.sender || 'Desconocido'}</td>
-            <td style="color: var(--success); font-weight: bold;">S/ ${p.amount}</td>
+            <td class="px-6 py-4 text-slate-600 dark:text-slate-400 text-sm">${dateStr}</td>
+            <td class="px-6 py-4 font-medium text-slate-900 dark:text-white">${p.sender || 'Desconocido'}</td>
+            <td class="px-6 py-4 font-bold text-emerald-600 dark:text-emerald-400">S/ ${p.amount}</td>
         `;
         paymentsTableBody.appendChild(tr);
     });

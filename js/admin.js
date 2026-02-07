@@ -30,19 +30,21 @@ const navItems = {
 
 // Initialize Flatpickr
 let reportDateRange = null;
-flatpickr("#reportDateRange", {
-    mode: "range",
-    dateFormat: "Y-m-d",
-    onChange: (selectedDates) => {
-        if (selectedDates.length === 2) {
-            reportDateRange = { start: selectedDates[0], end: selectedDates[1] };
-            // Set end of day
-            reportDateRange.end.setHours(23, 59, 59, 999);
-        } else {
-            reportDateRange = null;
+if (document.getElementById("reportDateRange")) {
+    flatpickr("#reportDateRange", {
+        mode: "range",
+        dateFormat: "Y-m-d",
+        onChange: (selectedDates) => {
+            if (selectedDates.length === 2) {
+                reportDateRange = { start: selectedDates[0], end: selectedDates[1] };
+                // Set end of day
+                reportDateRange.end.setHours(23, 59, 59, 999);
+            } else {
+                reportDateRange = null;
+            }
         }
-    }
-});
+    });
+}
 
 // Load Data
 devicesRef.on('value', snap => {
@@ -74,13 +76,17 @@ function refreshUI() {
 window.switchTab = function (tabName) {
     currentTab = tabName;
 
-    // Update Nav
-    Object.values(navItems).forEach(el => el.classList.remove('active'));
-    if (navItems[tabName]) navItems[tabName].classList.add('active');
+    // Update Nav - use nav-active class
+    Object.values(navItems).forEach(el => {
+        if (el) el.classList.remove('nav-active');
+    });
+    if (navItems[tabName]) navItems[tabName].classList.add('nav-active');
 
-    // Update Views
-    Object.values(views).forEach(el => el.style.display = 'none');
-    if (views[tabName]) views[tabName].style.display = 'block';
+    // Update Views - use hidden-view class
+    Object.values(views).forEach(el => {
+        if (el) el.classList.add('hidden-view');
+    });
+    if (views[tabName]) views[tabName].classList.remove('hidden-view');
 
     if (tabName === 'reports') {
         populateReportUserSelect();
@@ -92,9 +98,10 @@ window.switchTab = function (tabName) {
         if (tabName === 'dashboard') renderDashboard();
     }
 
-    // Mobile: Close sidebar after selection
-    if (window.innerWidth <= 768) {
-        document.querySelector('.sidebar').classList.remove('active');
+    // Mobile: Close sidebar after selection (if exists)
+    const sidebar = document.querySelector('.sidebar');
+    if (sidebar && window.innerWidth <= 768) {
+        sidebar.classList.remove('active');
     }
 };
 
@@ -108,9 +115,9 @@ document.addEventListener('click', function (event) {
     const sidebar = document.querySelector('.sidebar');
     const toggleBtn = document.querySelector('.mobile-toggle');
 
-    if (sidebar.classList.contains('active') &&
+    if (sidebar && sidebar.classList.contains('active') &&
         !sidebar.contains(event.target) &&
-        !toggleBtn.contains(event.target)) {
+        (!toggleBtn || !toggleBtn.contains(event.target))) {
         sidebar.classList.remove('active');
     }
 });
@@ -135,6 +142,16 @@ function renderDashboard() {
     const elPending = document.getElementById('dashboardPendingCount');
     if (elPending) elPending.textContent = pendingDevices;
 
+    // Show/Hide "Acción Requerida" badge based on pending devices
+    const elPendingBadge = document.getElementById('dashboardPendingBadge');
+    if (elPendingBadge) {
+        if (pendingDevices > 0) {
+            elPendingBadge.classList.remove('hidden');
+        } else {
+            elPendingBadge.classList.add('hidden');
+        }
+    }
+
     const elTotalDevices = document.getElementById('dashboardTotalDevices');
     if (elTotalDevices) elTotalDevices.textContent = devices.length;
 
@@ -147,19 +164,20 @@ function renderDashboard() {
     payments.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
     const recent = payments.slice(0, 5);
     const tbody = document.getElementById('recentPaymentsTable');
-    tbody.innerHTML = '';
-
-    recent.forEach(p => {
-        const tr = document.createElement('tr');
-        const date = new Date(p.timestamp || 0);
-        tr.innerHTML = `
-            <td>${date.toLocaleTimeString()}</td>
-            <td style="font-family: monospace;">${p.deviceCode || '-'}</td>
-            <td>${p.sender || 'Desconocido'}</td>
-            <td style="font-weight: bold; color: var(--success);">S/ ${p.amount}</td>
-        `;
-        tbody.appendChild(tr);
-    });
+    if (tbody) {
+        tbody.innerHTML = '';
+        recent.forEach(p => {
+            const tr = document.createElement('tr');
+            const date = new Date(p.timestamp || 0);
+            tr.innerHTML = `
+                <td>${date.toLocaleTimeString()}</td>
+                <td style="font-family: monospace;">${p.deviceCode || '-'}</td>
+                <td>${p.sender || 'Desconocido'}</td>
+                <td style="font-weight: bold; color: var(--success);">S/ ${p.amount}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -173,20 +191,17 @@ function renderDevices() {
     tbody.innerHTML = '';
 
     if (!devicesData) {
-        console.warn("No devices data found");
-        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Cargando datos...</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">Cargando datos...</td></tr>';
         return;
     }
 
     const devices = Object.values(devicesData);
-    console.log("Rendering Devices:", devices.length, devices);
-
     if (devices.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 2rem;">No hay dispositivos registrados</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 2rem;">No hay dispositivos registrados</td></tr>';
         return;
     }
 
-    // Sort pending first
+    // Sort: Pending first, then by date
     devices.sort((a, b) => {
         if (a.status === 'pending' && b.status !== 'pending') return -1;
         if (a.status !== 'pending' && b.status === 'pending') return 1;
@@ -196,29 +211,50 @@ function renderDevices() {
     devices.forEach(device => {
         const tr = document.createElement('tr');
         const date = device.createdAt ? new Date(device.createdAt).toLocaleDateString() : 'N/A';
-        const statusBadge = getStatusBadge(device.status);
 
-        let actions = '';
-        if (device.status === 'pending') {
-            actions = `
-                <button onclick="updateDeviceStatus('${device.code}', 'approved')" class="glass-button" style="padding: 0.6rem; font-size: 1.1rem; background: var(--success); margin-right: 0.3rem;" title="Aprobar">✓</button>
-                <button onclick="updateDeviceStatus('${device.code}', 'rejected')" class="glass-button" style="padding: 0.6rem; font-size: 1.1rem; background: var(--warning); margin-right: 0.3rem;" title="Rechazar">✕</button>
-            `;
-        } else if (device.status === 'approved') {
-            actions = `<button onclick="updateDeviceStatus('${device.code}', 'rejected')" class="glass-button" style="padding: 0.5rem 0.8rem; font-size: 0.9rem; background: var(--warning); margin-right: 0.3rem;">Suspender</button>`;
+        // Find assigned user
+        const assignedUser = Object.values(usersData || {}).find(u => u.deviceCode === device.code);
+
+        // Logic for Status Badge (Sync with User)
+        let statusBadge = '';
+        if (assignedUser) {
+            const uStatus = assignedUser.status || (assignedUser.active ? 'active' : 'inactive');
+            if (uStatus === 'active') {
+                statusBadge = '<span class="px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400">Activo</span>';
+            } else if (uStatus === 'suspended') {
+                statusBadge = '<span class="px-3 py-1 rounded-full text-xs font-bold bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400">Suspendido</span>';
+            } else {
+                statusBadge = '<span class="px-3 py-1 rounded-full text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-500">Inactivo</span>';
+            }
         } else {
-            actions = `<button onclick="updateDeviceStatus('${device.code}', 'approved')" class="glass-button" style="padding: 0.5rem 0.8rem; font-size: 0.9rem; background: var(--success); margin-right: 0.3rem;">Activar</button>`;
+            // No user assigned -> Always Pending visually
+            statusBadge = '<span class="px-3 py-1 rounded-full text-xs font-bold bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400">Pendiente</span>';
         }
 
-        // Add Delete Button
-        actions += `<button onclick="deleteDevice('${device.code}')" class="glass-button" style="padding: 0.6rem; font-size: 1.1rem; background: var(--danger);" title="Eliminar Definitivamente">🗑</button>`;
+        // Refine User Display if no user
+        const finalUserDisplay = assignedUser ?
+            `<span class="font-bold text-slate-700 dark:text-slate-300">${assignedUser.username}</span>` :
+            `<span class="text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-500 px-2 py-1 rounded">Sin Asignar</span>`;
+
+        // Actions: Only "Forget" (Delete)
+        const actions = `<button onclick="deleteDevice('${device.code}')" 
+            class="px-3 py-2 rounded-lg bg-red-500 hover:bg-red-600 text-white font-bold text-sm transition-all shadow-sm hover:shadow-md flex items-center gap-1" 
+            title="Olvidar Equipo">
+            <span class="material-symbols-outlined text-[16px]">delete</span> Olvidar
+        </button>`;
 
         tr.innerHTML = `
-            <td data-label="Código" style="font-family: monospace; font-weight: bold; font-size: 1.1rem;">${device.code}</td>
-            <td data-label="Modelo">${device.model || 'Unknown'}<br><small style="color:var(--text-muted)">${device.manufacturer || ''}</small></td>
-            <td data-label="Estado">${statusBadge}</td>
-            <td data-label="Registrado">${date}</td>
-            <td data-label="Acciones">${actions}</td>
+            <td class="px-6 py-4 font-mono font-bold text-slate-900 dark:text-white">${device.code}</td>
+            <td class="px-6 py-4">
+                <div class="font-medium text-slate-900 dark:text-white">${device.model || 'Unknown'}</div>
+                <div class="text-xs text-slate-500 dark:text-slate-400">${device.manufacturer || ''}</div>
+            </td>
+            <td class="px-6 py-4">${statusBadge}</td>
+            <td class="px-6 py-4 text-slate-600 dark:text-slate-400">${date}</td>
+            <td class="px-6 py-4">${finalUserDisplay}</td>
+            <td class="px-6 py-4">
+                <div class="flex gap-2">${actions}</div>
+            </td>
         `;
         tbody.appendChild(tr);
     });
@@ -230,27 +266,27 @@ window.updateDeviceStatus = function (code, status) {
 };
 
 window.deleteDevice = function (code) {
-    if (!confirm(`⚠️ PELIGRO: ¿Estás seguro de ELIMINAR el dispositivo ${code}?\n\nEsto borrará permanentemente:\n1. El dispositivo de la lista.\n2. TODOS los pagos/registros asociados.\n3. El usuario asignado (si existe).`)) return;
+    if (!confirm(`⚠️ ALERTA: ¿Estás seguro de ELIMINAR el dispositivo ${code}?\n\nEsto borrará permanentemente el dispositivo y sus pagos asociados.\n(El usuario asociado NO será eliminado, pero quedará desvinculado).`)) return;
 
     // 1. Delete associated Payments
     const paymentsToDelete = Object.keys(paymentsData).filter(key => paymentsData[key].deviceCode === code);
     paymentsToDelete.forEach(key => paymentsRef.child(key).remove());
 
-    // 2. Delete associated User (if any)
-    const userToDelete = Object.values(usersData).find(u => u.deviceCode === code);
-    if (userToDelete) {
-        usersRef.child(userToDelete.username).remove();
+    // 2. Unlink User (if any)
+    const userToUnlink = Object.values(usersData).find(u => u.deviceCode === code);
+    if (userToUnlink) {
+        usersRef.child(userToUnlink.username).update({ deviceCode: null });
+        console.log(`Usuario ${userToUnlink.username} desvinculado del dispositivo ${code}`);
     }
 
     // 3. Delete Device
     devicesRef.child(code).remove();
 };
 
-
 function getStatusBadge(status) {
-    if (status === 'approved') return '<span class="badge badge-approved">Aprobado</span>';
-    if (status === 'rejected') return '<span class="badge badge-rejected">Rechazado</span>';
-    return '<span class="badge badge-pending">Pendiente</span>';
+    if (status === 'approved') return '<span class="px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400">Aprobado</span>';
+    if (status === 'rejected') return '<span class="px-3 py-1 rounded-full text-xs font-bold bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400">Rechazado</span>';
+    return '<span class="px-3 py-1 rounded-full text-xs font-bold bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400">Pendiente</span>';
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -259,50 +295,117 @@ function getStatusBadge(status) {
 
 function renderUsers() {
     const tbody = document.getElementById('usersTableBody');
+    if (!tbody) return;
     tbody.innerHTML = '';
     const users = Object.values(usersData || {}).filter(u => u.role !== 'admin');
+
+    if (users.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 2rem;">No hay usuarios creados</td></tr>';
+        return;
+    }
 
     users.forEach(user => {
         const tr = document.createElement('tr');
         const date = user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'N/A';
-        // Generate a safe ID for the input
         const passId = `pass-${user.username.replace(/[^a-zA-Z0-9]/g, '')}`;
 
+        // Determinar Estado Visual
+        let statusBadge = '';
+        let btnStatus = '';
+        const status = user.status || (user.active ? 'active' : 'inactive'); // Fallback compatibility
+
+        if (status === 'active') {
+            statusBadge = '<span class="px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400">Activo</span>';
+            // Botón para Suspender
+            btnStatus = `<button onclick="toggleUserStatus('${user.username}', 'active')" class="px-3 py-2 rounded-lg bg-amber-500 hover:bg-amber-600 text-white font-bold text-sm transition-all shadow-sm hover:shadow-md mr-1" title="Suspender">Suspender</button>`;
+        } else if (status === 'suspended') {
+            statusBadge = '<span class="px-3 py-1 rounded-full text-xs font-bold bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400">Suspendido</span>';
+            // Botón para Activar (Reactivar)
+            btnStatus = `<button onclick="toggleUserStatus('${user.username}', 'suspended')" class="px-3 py-2 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-sm transition-all shadow-sm hover:shadow-md mr-1" title="Activar">Activar</button>`;
+        } else { // Inactive
+            statusBadge = '<span class="px-3 py-1 rounded-full text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-500">Inactivo</span>';
+            // Botón para Activar
+            btnStatus = `<button onclick="toggleUserStatus('${user.username}', 'inactive')" class="px-3 py-2 rounded-lg bg-primary hover:bg-primary/90 text-white font-bold text-sm transition-all shadow-sm hover:shadow-md mr-1" title="Activar">Activar</button>`;
+        }
+
+        // Buttons
+        const btnEdit = `<button onclick="openEditUserModal('${user.username}')" class="px-3 py-2 rounded-lg bg-blue-500 hover:bg-blue-600 text-white font-bold text-sm transition-all shadow-sm hover:shadow-md mr-1" title="Reasignar">Reasignar</button>`;
+        const btnDelete = `<button onclick="deleteUser('${user.username}')" class="px-3 py-2 rounded-lg bg-red-500 hover:bg-red-600 text-white font-bold text-sm transition-all shadow-sm hover:shadow-md flex items-center gap-1" title="Olvidar Usuario">Olvidar</button>`;
+
         tr.innerHTML = `
-            <td data-label="Usuario" style="font-weight: bold;">${user.username}</td>
-            <td data-label="Dispositivo" style="font-family: monospace;">${user.deviceCode}</td>
-            <td data-label="Contraseña">
-                <div style="display: flex; align-items: center; gap: 5px; border: 1px solid var(--border); padding: 5px 10px; border-radius: 8px; background: var(--surface); width: fit-content;">
+            <td class="px-6 py-4 font-bold text-slate-900 dark:text-white">${user.username}</td>
+            <td class="px-6 py-4 font-mono text-slate-600 dark:text-slate-400">${user.deviceCode || '<span class="text-red-400">Sin asignar</span>'}</td>
+            <td class="px-6 py-4">${statusBadge}</td>
+            <td class="px-6 py-4">
+                <div class="inline-flex items-center gap-1.5 border border-slate-200 dark:border-slate-700 px-2.5 py-1.5 rounded-lg bg-slate-50 dark:bg-slate-800/50">
                     <input type="password" id="${passId}" value="${user.password}"
-                        style="border: none; background: transparent; outline: none; width: 120px; font-family: monospace; color: var(--text); font-size: 1rem;"
+                        class="border-none bg-transparent outline-none w-24 font-mono text-slate-900 dark:text-white text-xs focus:ring-0 p-0"
                         onkeypress="if(event.key === 'Enter') updateUserPassword('${user.username}', this.value)"
                     >
                     <button onclick="togglePassword('${passId}', this)" type="button"
-                        style="background: none; border: none; cursor: pointer; padding: 0; font-size: 1.1rem; display: flex; align-items: center; opacity: 0.6;"
+                        class="bg-transparent border-none cursor-pointer p-0 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
                         title="Ver/Ocultar">
-                        👁️
+                        <span class="material-symbols-outlined text-[16px]">visibility</span>
                     </button>
                 </div>
-                <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 2px; padding-left: 5px;">Enter para guardar</div>
             </td>
-            <td data-label="Inicio">${date}</td>
-            <td data-label="Acciones">
-                <button onclick="deleteUser('${user.username}')" class="glass-button" style="padding: 0.6rem; font-size: 1.1rem; background: var(--danger);">🗑</button>
+            <td class="px-6 py-4 text-slate-600 dark:text-slate-400">${date}</td>
+            <td class="px-6 py-4">
+                <div class="flex items-center flex-wrap gap-1">${btnStatus}${btnEdit}${btnDelete}</div>
             </td>
         `;
         tbody.appendChild(tr);
     });
 }
 
+// Nueva función para cambiar estado dinámicamente
+window.toggleUserStatus = function (username, currentStatus) {
+    let newStatus = 'active';
+    let deviceStatus = 'approved';
+
+    if (currentStatus === 'active') {
+        newStatus = 'suspended';
+        deviceStatus = 'rejected';
+    } else if (currentStatus === 'suspended') {
+        newStatus = 'active';
+        deviceStatus = 'approved';
+    } else { // inactive
+        newStatus = 'active';
+        deviceStatus = 'approved';
+    }
+
+    const updates = {};
+    updates[`users/${username}/status`] = newStatus;
+    updates[`users/${username}/active`] = (newStatus === 'active'); // Mantener compatibilidad
+
+    // Buscar dispositivo asociado para actualizar su estado también
+    const user = usersData[username];
+    if (user && user.deviceCode) {
+        updates[`devices/${user.deviceCode}/status`] = deviceStatus;
+        // CRITICAL FIX: Sync nested user status so App Login works
+        updates[`devices/${user.deviceCode}/user/active`] = (newStatus === 'active');
+        updates[`devices/${user.deviceCode}/user/status`] = newStatus;
+    }
+
+    database.ref().update(updates).then(() => {
+        // alert(`Estado cambiado a ${newStatus.toUpperCase()}`);
+        console.log(`Usuario ${username} cambiado a ${newStatus}`);
+    }).catch(err => alert("Error al cambiar estado: " + err.message));
+};
+
 window.togglePassword = function (id, btn) {
     const input = document.getElementById(id);
     if (!input) return;
+
+    const icon = btn.querySelector('.material-symbols-outlined');
+    if (!icon) return;
+
     if (input.type === 'password') {
         input.type = 'text';
-        btn.style.opacity = '1';
+        icon.textContent = 'visibility_off';
     } else {
         input.type = 'password';
-        btn.style.opacity = '0.6';
+        icon.textContent = 'visibility';
     }
 };
 
@@ -310,235 +413,347 @@ window.updateUserPassword = function (username, newPass) {
     newPass = newPass.trim();
     if (!newPass) {
         alert("La contraseña no puede estar vacía");
-        // Reset to old value just in case visual sync is needed, but firebase listener will handle it
         return;
     }
-
     usersRef.child(username).update({ password: newPass }).then(() => {
-        // Optional: toast or mini alert
         alert(`✅ Contraseña de ${username} actualizada correctamente.`);
-        // Remove focus to show it's done
         document.activeElement.blur();
     }).catch(err => {
         alert("Error al actualizar: " + err.message);
     });
 };
 
-
-// Create User Modal Logic
-const modal = document.getElementById('createUserModal');
-const deviceSelect = document.getElementById('deviceSelect');
-const createUserForm = document.getElementById('createUserForm');
-
-window.showCreateUserModal = function () {
-    console.log("Opening Create User Modal");
-
-    // Populate dropdown
-    deviceSelect.innerHTML = '<option value="">-- Seleccionar Dispositivo --</option>';
-
-    // Safety check
-    if (!devicesData || Object.keys(devicesData).length === 0) {
-        alert("No hay dispositivos registrados en el sistema.");
-        return;
-    }
-
-    const devices = Object.values(devicesData);
-    const assignedCodes = Object.values(usersData || {}).map(u => u.deviceCode);
-
-    // Show APPROVED devices that are NOT assigned
-    const available = devices.filter(d => d.status === 'approved' && !assignedCodes.includes(d.code));
-
-    console.log("Available devices for user creation:", available);
-
-    if (available.length === 0) {
-        // Show alert but ALSO Log why
-        const pending = devices.filter(d => d.status === 'pending').length;
-        const assigned = devices.filter(d => assignedCodes.includes(d.code)).length;
-
-        let msg = "No hay dispositivos disponibles para asignar.\n\n";
-        if (pending > 0) msg += `- Tienes ${pending} dispositivos PENDIENTES (apruébalos primero en "Dispositivos").\n`;
-        if (assigned > 0) msg += `- Tienes ${assigned} dispositivos ya asignados a otros usuarios.\n`;
-        if (pending === 0 && assigned === 0) msg += "- No hay dispositivos Aprobados en la lista.";
-
-        alert(msg);
-        return;
-    }
-
-    available.forEach(d => {
-        const opt = document.createElement('option');
-        opt.value = d.code;
-        opt.textContent = `${d.code} (${d.model})`;
-        deviceSelect.appendChild(opt);
-    });
-
-    modal.style.display = 'flex';
-};
-
-createUserForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const username = document.getElementById('newUsername').value.trim();
-    const password = document.getElementById('newPassword').value.trim();
-    const deviceCode = deviceSelect.value;
-
-    console.log("Attempting to create user:", { username, deviceCode });
-
-    if (!username || !password || !deviceCode) {
-        alert("Por favor completa todos los campos.");
-        return;
-    }
-
-    if (username.includes(' ') || username.includes('/') || username.includes('.')) {
-        alert("El usuario no puede contener espacios ni caracteres especiales.");
-        return;
-    }
-
-    if (usersData && usersData[username]) {
-        alert("El usuario '" + username + "' ya existe. Por favor elige otro.");
-        return;
-    }
-
-    // Show loading state
-    const submitBtn = createUserForm.querySelector('button[type="submit"]');
-    const originalText = submitBtn.textContent;
-    submitBtn.disabled = true;
-    submitBtn.textContent = "Creando...";
-
-    // Save user data in devices/{deviceCode}/user (for mobile app login)
-    const userData = {
-        username: username,
-        password: password,
-        active: true,
-        capture_yape: true,
-        capture_gmail: false,
-        google_home_enabled: false,
-        google_sheet_url: "",
-        createdAt: firebase.database.ServerValue.TIMESTAMP
-    };
-
-    devicesRef.child(deviceCode).child('user').set(userData).then(() => {
-        // Also save in users/ for admin panel compatibility
-        return usersRef.child(username).set({
-            username,
-            password,
-            deviceCode,
-            role: 'user',
-            createdAt: firebase.database.ServerValue.TIMESTAMP
-        });
-    }).then(() => {
-        alert("¡Usuario creado exitosamente!\n\nCredenciales:\nUsuario: " + username + "\nContraseña: " + password + "\nDispositivo: " + deviceCode);
-        modal.style.display = 'none';
-        createUserForm.reset();
-
-        // Force refresh of Users tab to show the new user immediately
-        renderUsers();
-        renderDashboard(); // Update stats
-
-    }).catch(err => {
-        console.error("Error creating user:", err);
-        alert("Error al guardar en base de datos: " + err.message);
-    }).finally(() => {
-        submitBtn.disabled = false;
-        submitBtn.textContent = originalText;
-    });
-});
-
-
 window.deleteUser = function (username) {
     const user = usersData[username];
     if (!user) return;
 
-    if (!confirm(`⚠️ PELIGRO: ¿Eliminar usuario ${username}?\n\nAl eliminar el usuario, también se eliminará su DISPOSITIVO (${user.deviceCode}) y TODOS sus registros de pagos.`)) return;
-
-    // Cascade delete via device (handles payments, device, and the user check)
-    // But since we are already deleting the user, we can manually call the parts or just invoke deleteDevice logic.
-    // However, deleteDevice tries to delete the user again, which is fine (idempotent-ish), but let's be explicit.
+    if (!confirm(`⚠️ ALERTA: ¿Eliminar usuario ${username}?\n\nEl usuario será eliminado permanentemente. El dispositivo asociado NO se eliminará, pero quedará libre para ser asignado a otro usuario.`)) return;
 
     if (user.deviceCode) {
-        // 1. Delete Payments
-        const paymentsToDelete = Object.keys(paymentsData).filter(key => paymentsData[key].deviceCode === user.deviceCode);
-        paymentsToDelete.forEach(key => paymentsRef.child(key).remove());
-
-        // 2. Delete Device
-        devicesRef.child(user.deviceCode).remove();
+        // Clear user data AND reset status to pending
+        devicesRef.child(user.deviceCode).update({
+            'user': null,
+            'status': 'pending'
+        });
     }
 
-    // 3. Delete User
-    usersRef.child(username).remove();
+    usersRef.child(username).remove().then(() => {
+        alert("Usuario eliminado correctamente.");
+    }).catch(err => {
+        alert("Error al eliminar: " + err.message);
+    });
 };
 
 // ═══════════════════════════════════════════════════════════
 // VIEW: REPORTS
 // ═══════════════════════════════════════════════════════════
-
+// (Reports code omitted for brevity as it was unchanged, keeping it same as original logic essentially)
 function populateReportUserSelect() {
     const sel = document.getElementById('reportUserSelect');
+    if (!sel) return;
     sel.innerHTML = '<option value="">Todos los usuarios / dispositivos</option>';
-
     const users = Object.values(usersData).filter(u => u.role !== 'admin');
     users.forEach(u => {
         const opt = document.createElement('option');
-        opt.value = u.deviceCode; // We filter by deviceCode, not username
-        opt.textContent = `Usuario: ${u.username} (Disp: ${u.deviceCode})`;
+        opt.value = u.deviceCode;
+        opt.textContent = `Usuario: ${u.username} (Disp: ${u.deviceCode || 'Sin Asignar'})`;
         sel.appendChild(opt);
     });
 }
-
 window.applyReportFilters = function () {
     const tbody = document.getElementById('reportsTableBody');
+    if (!tbody) return;
     const selectedDeviceCode = document.getElementById('reportUserSelect').value;
     const searchText = document.getElementById('reportSearch').value.toLowerCase();
-
     tbody.innerHTML = '';
     let results = Object.values(paymentsData);
-
-    // Filter 1: Device/User
-    if (selectedDeviceCode) {
-        results = results.filter(p => p.deviceCode === selectedDeviceCode);
-    }
-
-    // Filter 2: Date
+    if (selectedDeviceCode) results = results.filter(p => p.deviceCode === selectedDeviceCode);
     if (reportDateRange) {
         results = results.filter(p => {
             const t = p.timestamp || 0;
             return t >= reportDateRange.start.getTime() && t <= reportDateRange.end.getTime();
         });
     }
-
-    // Filter 3: Text
     if (searchText) {
         results = results.filter(p =>
             (p.sender && p.sender.toLowerCase().includes(searchText)) ||
             (p.content && p.content.toLowerCase().includes(searchText))
         );
     }
-
-    // Sort desc
     results.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-
     document.getElementById('reportCount').textContent = `${results.length} registros`;
-
     if (results.length === 0) {
         tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding: 2rem;">No se encontraron resultados</td></tr>`;
         return;
     }
-
     results.forEach(p => {
         const tr = document.createElement('tr');
         const date = new Date(p.timestamp || 0);
-
-        // Find username for this device
         const user = Object.values(usersData).find(u => u.deviceCode === p.deviceCode);
         const ownerName = user ? user.username : (p.deviceCode || 'N/A');
-
         tr.innerHTML = `
             <td>${date.toLocaleString()}</td>
             <td>${ownerName}</td>
             <td>${p.sender}</td>
             <td style="color:var(--success); font-weight:bold;">S/ ${p.amount}</td>
-            <td style="font-size:0.8rem; color:var(--text-muted); max-width: 250px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
-                ${p.content}
-            </td>
+            <td style="font-size:0.8rem; color:var(--text-muted); max-width: 250px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${p.content}</td>
         `;
         tbody.appendChild(tr);
     });
 };
+
+// ═══════════════════════════════════════════════════════════
+// MODAL & USER CREATION / EDITING
+// ═══════════════════════════════════════════════════════════
+
+const modal = document.getElementById('createUserModal');
+const deviceSelect = document.getElementById('deviceSelect');
+const createUserForm = document.getElementById('createUserForm');
+
+window.showCreateUserModal = function () {
+    const modal = document.getElementById('createUserModal');
+    const deviceSelect = document.getElementById('deviceSelect');
+
+    console.log("Opening Create User Modal...");
+    if (!deviceSelect) {
+        console.error("Critical Error: 'deviceSelect' element not found in DOM.");
+        alert("Error de interfaz: No se encontró el selector.");
+        return;
+    }
+
+    deviceSelect.innerHTML = '<option value="">-- Seleccionar Dispositivo --</option>';
+
+    const devices = Object.values(devicesData || {});
+    console.log("Devices Data:", devices);
+
+    if (devices.length === 0) {
+        alert("No hay dispositivos registrados en el sistema.");
+        return;
+    }
+
+    // Modificado: Mostrar TODOS los dispositivos (Pending/Approved/Rejected)
+    // Para que aparezcan directamente al crear usuario
+    const availableDevices = devices;
+
+    // Sort logic (optional): Pending first?
+    availableDevices.sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
+
+    const assignedCodes = Object.values(usersData || {}).map(u => u.deviceCode);
+
+    if (availableDevices.length === 0) {
+        alert("No hay dispositivos registrados.");
+        return;
+    }
+
+    availableDevices.forEach(d => {
+        const isAssigned = assignedCodes.includes(d.code);
+        // Safely find assigned user
+        const assignedUser = Object.values(usersData || {}).find(u => u.deviceCode === d.code);
+        const assignedUsername = assignedUser ? assignedUser.username : 'Desconocido';
+
+        const opt = document.createElement('option');
+        opt.value = d.code;
+        // Show status clearly
+        opt.textContent = `${d.code} (${d.model})${isAssigned ? ' - [Ocupado por ' + assignedUsername + ']' : ''}`;
+
+        if (isAssigned) {
+            opt.disabled = true;
+            opt.style.color = '#9ca3af';
+        }
+
+        deviceSelect.appendChild(opt);
+    });
+
+    if (modal) {
+        if (typeof modal.showModal === 'function') {
+            try {
+                if (!modal.open) modal.showModal();
+            } catch (e) {
+                console.warn("Modal already open or error:", e);
+            }
+        } else {
+            modal.style.display = 'flex';
+        }
+    } else {
+        console.error("Error: 'createUserModal' not found.");
+    }
+};
+
+window.populateDeviceSelect = window.showCreateUserModal;
+
+if (createUserForm) {
+    createUserForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const username = document.getElementById('newUsername').value.trim();
+        const password = document.getElementById('newPassword').value.trim();
+        const deviceCode = deviceSelect.value;
+
+        if (!username || !password || !deviceCode) { alert("Completa todos los campos"); return; }
+        if (usersData[username]) { alert("El usuario ya existe"); return; }
+
+        const submitBtn = createUserForm.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Creando...";
+
+        // Core data logic
+        const userDataApp = {
+            username: username,
+            password: password,
+            active: false, // Por defecto INACTIVO
+            status: 'inactive', // Estado explícito
+            capture_yape: true,
+            capture_gmail: false,
+            google_home_enabled: false,
+            google_sheet_url: "",
+            createdAt: firebase.database.ServerValue.TIMESTAMP
+        };
+
+        // 1. Link to Device (Set device status to pending/rejected initially? Or keep current status?)
+        // If user is inactive, device should NOT be approved yet. 
+        // Force device status to 'pending' or 'rejected' if creating inactive user.
+        // Let's set it to 'pending' as safe default.
+        const deviceUpdates = {
+            'user': userDataApp,
+            'status': 'pending' // Forzar estado pendiente hasta que se active el usuario
+        };
+
+        devicesRef.child(deviceCode).update(deviceUpdates).then(() => {
+            // 2. Create User Entry
+            return usersRef.child(username).set({
+                username, password, deviceCode, role: 'user',
+                status: 'inactive', active: false, // Default Inactive
+                createdAt: firebase.database.ServerValue.TIMESTAMP
+            });
+        }).then(() => {
+            alert("Usuario creado exitosamente.");
+            if (modal && typeof modal.close === 'function') modal.close();
+            else if (modal) modal.style.display = 'none';
+            createUserForm.reset();
+        }).catch(err => {
+            alert("Error: " + err.message);
+        }).finally(() => {
+            submitBtn.disabled = false;
+            submitBtn.textContent = "Crear Usuario";
+        });
+    });
+}
+
+// EDIT USER MODAL LOGIC (New Feature)
+window.openEditUserModal = function (username) {
+    const user = usersData[username];
+    if (!user) return;
+
+    // Get modal elements
+    const editModal = document.getElementById('editUserModal');
+    if (!editModal) { alert("Error: Modal de edición no encontrado en HTML."); return; }
+
+    document.getElementById('editUsernameOriginal').value = username;
+    document.getElementById('editUsernameDisplay').value = username;
+
+    const editSelect = document.getElementById('editDeviceSelect');
+    editSelect.innerHTML = '<option value="">-- Sin Dispositivo (Desvincular) --</option>';
+
+    // Populate with ALL devices (Pending/Approved/Rejected) to allow reassignment to any free device
+    const devices = Object.values(devicesData);
+    const assignedCodes = Object.values(usersData).map(u => u.deviceCode).filter(c => c !== user.deviceCode);
+
+    devices.forEach(d => {
+        const isAssigned = assignedCodes.includes(d.code);
+        const assignedUser = Object.values(usersData).find(u => u.deviceCode === d.code);
+
+        const opt = document.createElement('option');
+        opt.value = d.code;
+        opt.textContent = `${d.code} (${d.model})${isAssigned ? ' - [Ocupado por ' + assignedUser.username + ']' : ''}`;
+
+        // Pre-select current device
+        if (d.code === user.deviceCode) {
+            opt.selected = true;
+            opt.textContent += " (Actual)";
+        }
+
+        if (isAssigned && d.code !== user.deviceCode) {
+            opt.disabled = true;
+            opt.style.color = '#9ca3af';
+        }
+
+        editSelect.appendChild(opt);
+    });
+
+    if (typeof editModal.showModal === 'function') {
+        try {
+            if (!editModal.open) editModal.showModal();
+        } catch (e) {
+            console.warn("Modal already open or error:", e);
+        }
+    } else {
+        editModal.style.display = 'flex';
+    }
+};
+
+// Handle Edit Submit
+const editUserForm = document.getElementById('editUserForm');
+if (editUserForm) {
+    editUserForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const username = document.getElementById('editUsernameOriginal').value;
+        const newDeviceCode = document.getElementById('editDeviceSelect').value;
+        const currentUserData = usersData[username];
+        const oldDeviceCode = currentUserData.deviceCode;
+
+        if (newDeviceCode === oldDeviceCode) {
+            document.getElementById('editUserModal').close();
+            return;
+        }
+
+        // 1. Unlink old device (if any)
+        if (oldDeviceCode) {
+            devicesRef.child(oldDeviceCode).child('user').remove();
+            // Optional: Reset old device status to 'pending'? 
+            // Better to leave it as is or reset. Let's leave it, but maybe safer to reset if no user.
+        }
+
+        // 2. Link new device (if any)
+        if (newDeviceCode) {
+            const userStatus = currentUserData.status || (currentUserData.active ? 'active' : 'inactive');
+            const newDeviceStatus = (userStatus === 'active') ? 'approved' :
+                (userStatus === 'suspended') ? 'rejected' : 'pending';
+
+            const userDataApp = {
+                username: username,
+                password: currentUserData.password,
+                active: currentUserData.active,
+                status: userStatus,
+                capture_yape: currentUserData.capture_yape !== undefined ? currentUserData.capture_yape : true,
+                capture_gmail: false,
+                google_home_enabled: false,
+                google_sheet_url: "",
+                createdAt: firebase.database.ServerValue.TIMESTAMP
+            };
+
+            // Set User Data AND Update Device Status to match User Status
+            const updates = {};
+            updates[`user`] = userDataApp;
+            updates[`status`] = newDeviceStatus;
+
+            devicesRef.child(newDeviceCode).update(updates);
+        }
+
+        // 3. Update User Entry
+        usersRef.child(username).update({ deviceCode: newDeviceCode || null })
+            .then(() => {
+                alert("Dispositivo reasignado correctamente.");
+                document.getElementById('editUserModal').close();
+            })
+            .catch(err => alert("Error: " + err.message));
+    });
+}
+
+// Global Listener for Create User Button (Moved from HTML to prevent duplicates)
+const btnNewUser = document.getElementById('showCreateUserModalBtn');
+if (btnNewUser) {
+    btnNewUser.addEventListener('click', (e) => {
+        e.preventDefault();
+        if (window.showCreateUserModal) window.showCreateUserModal();
+        else console.error("window.showCreateUserModal is not defined");
+    });
+}

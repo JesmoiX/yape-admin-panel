@@ -1,44 +1,174 @@
 <!DOCTYPE html>
-<html lang="es">
+<html class="light" lang="es">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Yape Admin | Login</title>
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- CSS -->
-    <link rel="stylesheet" href="css/style.css">
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Yape Admin | Iniciar Sesión</title>
+
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#5b13ec",
+                        "accent": "#ec138e",
+                        "background-light": "#F8FAFC",
+                        "background-dark": "#0f0a19",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "2xl": "1rem",
+                        "3xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                    boxShadow: {
+                        "premium": "0 20px 40px -10px rgba(0, 0, 0, 0.05)",
+                        "premium-hover": "0 30px 60px -15px rgba(91, 19, 236, 0.15)",
+                        "glass": "0 8px 32px 0 rgba(31, 38, 135, 0.1)"
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'float-delayed': 'float 6s ease-in-out 3s infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        }
+                    }
+                },
+            },
+        }
+    </script>
+
     <style>
-        /* Styles moved to css/style.css */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.08);
+        }
+
+        .dark .glass-card {
+            background: rgba(15, 10, 25, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .floating-shape {
+            position: absolute;
+            filter: blur(60px);
+            opacity: 0.6;
+            z-index: 0;
+        }
     </style>
 </head>
 
-<body>
+<body
+    class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-white antialiased overflow-hidden selection:bg-accent selection:text-white h-screen w-full flex items-center justify-center relative">
 
-    <div class="login-container">
-        <div class="login-card">
-            <span class="logo">Yape Admin</span>
+    <!-- Floating Background Shapes -->
+    <div class="floating-shape bg-primary/20 w-96 h-96 rounded-full top-[-100px] left-[-100px] animate-float"></div>
+    <div class="floating-shape bg-accent/20 w-80 h-80 rounded-full bottom-[-50px] right-[-50px] animate-float-delayed">
+    </div>
+    <div class="floating-shape bg-blue-400/10 w-64 h-64 rounded-full top-[20%] right-[20%] animate-float"></div>
 
-            <form id="loginForm">
-                <div class="mb-4" style="text-align: left;">
-                    <label
-                        style="display: block; margin-bottom: 0.5rem; font-size: 0.9rem; color: var(--text-muted); font-weight: 500;">Usuario</label>
-                    <input type="text" id="username" class="form-control" placeholder="admin" required>
+    <!-- Login Container -->
+    <div class="relative z-10 w-full max-w-md p-6">
+
+        <!-- Logo Header -->
+        <div class="flex justify-center mb-8">
+            <div class="flex items-center gap-3">
+                <div
+                    class="size-12 rounded-full bg-gradient-to-tr from-primary to-accent flex items-center justify-center text-white font-black text-2xl shadow-[0_0_20px_rgba(91,19,236,0.5)]">
+                    Y
+                </div>
+                <span
+                    class="font-black text-3xl bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent tracking-tight">Yape</span>
+            </div>
+        </div>
+
+        <!-- Glass Card -->
+        <div class="glass-card rounded-[2rem] p-10 w-full relative overflow-hidden group">
+            <div
+                class="absolute inset-0 rounded-[2rem] border-2 border-white/50 dark:border-white/5 pointer-events-none">
+            </div>
+
+            <div class="relative z-10">
+                <!-- Title -->
+                <div class="text-center mb-8">
+                    <h1 class="text-3xl font-black text-slate-900 dark:text-white mb-2">Bienvenido</h1>
+                    <p class="text-slate-500 dark:text-slate-400 font-medium">Ingresa tus credenciales para acceder al
+                        panel</p>
                 </div>
 
-                <div class="mb-4" style="text-align: left;">
-                    <label
-                        style="display: block; margin-bottom: 0.5rem; font-size: 0.9rem; color: var(--text-muted); font-weight: 500;">Contraseña</label>
-                    <input type="password" id="password" class="form-control" placeholder="••••••••" required>
-                </div>
+                <!-- Login Form -->
+                <form id="loginForm" class="flex flex-col gap-5">
+                    <div class="space-y-1">
+                        <label
+                            class="text-xs font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500 ml-1"
+                            for="username">Usuario</label>
+                        <div class="relative group/input">
+                            <span
+                                class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within/input:text-primary transition-colors">person</span>
+                            <input
+                                class="w-full bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl py-4 pl-12 pr-4 outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all font-semibold placeholder:text-slate-300 dark:placeholder:text-slate-600 text-slate-900 dark:text-white"
+                                id="username" placeholder="user" type="text" required />
+                        </div>
+                    </div>
 
-                <button type="submit" class="glass-button" style="width: 100%; margin-top: 1rem;">
-                    Ingresar
-                </button>
-            </form>
+                    <div class="space-y-1">
+                        <label
+                            class="text-xs font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500 ml-1"
+                            for="password">Contraseña</label>
+                        <div class="relative group/input">
+                            <span
+                                class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within/input:text-primary transition-colors">lock</span>
+                            <input
+                                class="w-full bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl py-4 pl-12 pr-12 outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all font-semibold placeholder:text-slate-300 dark:placeholder:text-slate-600 text-slate-900 dark:text-white"
+                                id="password" placeholder="••••••••" type="password" required />
+                            <!-- Password Toggle -->
+                            <button type="button" id="toggleLoginPass"
+                                class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-primary transition-colors focus:outline-none">
+                                <span class="material-symbols-outlined">visibility</span>
+                            </button>
+                        </div>
+                    </div>
 
-            <p id="errorMessage" style="color: var(--danger); margin-top: 1rem; display: none;"></p>
+                    <button type="submit"
+                        class="w-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold py-4 rounded-2xl hover:shadow-[0_10px_30px_-10px_rgba(0,0,0,0.3)] dark:hover:shadow-[0_10px_30px_-10px_rgba(255,255,255,0.2)] hover:-translate-y-0.5 transition-all mt-2">
+                        Ingresar al Panel
+                    </button>
+                </form>
+
+                <!-- Error Message -->
+                <p id="errorMessage"
+                    class="mt-6 text-center text-sm font-bold text-red-500 dark:text-red-400 hidden bg-red-50 dark:bg-red-900/20 p-3 rounded-xl border border-red-200 dark:border-red-800">
+                </p>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="flex justify-center gap-6 mt-8">
+            <span class="text-xs font-medium text-slate-400">Sistema de Gestión de Pagos Yape</span>
         </div>
     </div>
 

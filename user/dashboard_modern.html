@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html class="light" lang="es">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Yape User | Mi Dashboard</title>
+
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+
+    <!-- CSS Dependencies -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#5b13ec",
+                        "accent": "#ec138e",
+                        "background-light": "#FAFAFA",
+                        "background-dark": "#0f0a19",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "2xl": "1rem",
+                        "3xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                    boxShadow: {
+                        "premium": "0 20px 40px -10px rgba(0, 0, 0, 0.05)",
+                        "premium-hover": "0 30px 60px -15px rgba(91, 19, 236, 0.15)",
+                        "glass": "0 8px 32px 0 rgba(31, 38, 135, 0.37)"
+                    }
+                },
+            },
+        }
+    </script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+    <style>
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #e2e8f0;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #cbd5e1;
+        }
+
+        .dark ::-webkit-scrollbar-thumb {
+            background: #334155;
+        }
+
+        .dark ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+    </style>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+</head>
+
+<body
+    class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-white antialiased overflow-hidden selection:bg-accent selection:text-white">
+
+    <div class="flex h-screen w-full">
+        <!-- SIDEBAR -->
+        <aside
+            class="relative z-30 hidden md:flex w-24 flex-col items-center py-10 h-full bg-[#050505]/95 backdrop-blur-xl transition-all duration-300 border-r border-white/5">
+            <div class="flex flex-col items-center mb-12">
+                <div
+                    class="size-12 rounded-2xl bg-gradient-to-tr from-primary to-accent flex items-center justify-center text-white font-black text-xl shadow-[0_0_20px_rgba(91,19,236,0.5)]">
+                    Y
+                </div>
+                <div class="text-[10px] font-bold text-slate-400 mt-2 tracking-widest uppercase">User</div>
+            </div>
+
+            <nav class="flex flex-col gap-6 w-full items-center px-4">
+                <!-- Dashboard Nav -->
+                <a href="#"
+                    class="group relative flex flex-col items-center justify-center p-3 w-full rounded-2xl text-white cursor-pointer transition-all">
+                    <div class="absolute inset-0 bg-primary/20 rounded-2xl opacity-100 transition-opacity duration-500">
+                    </div>
+                    <span
+                        class="material-symbols-outlined text-[28px] relative z-10 group-hover:scale-110 transition-transform mb-1 text-primary">dashboard</span>
+                    <span class="text-[10px] font-bold relative z-10">Inicio</span>
+                </a>
+            </nav>
+
+            <div class="mt-auto flex flex-col gap-6 w-full items-center px-4">
+                <!-- Device Badge -->
+                <div class="text-center">
+                    <div class="text-[8px] font-bold text-slate-500 uppercase mb-1">Dispositivo</div>
+                    <div id="userDeviceBadge" class="text-[10px] font-mono font-bold text-slate-300">...</div>
+                </div>
+
+                <button onclick="logout()"
+                    class="size-12 rounded-full bg-slate-800 hover:bg-red-500/20 hover:text-red-500 text-slate-400 transition-all cursor-pointer flex items-center justify-center group"
+                    title="Cerrar Sesión">
+                    <span class="material-symbols-outlined group-hover:rotate-180 transition-transform">logout</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="flex-1 flex flex-col h-full overflow-hidden relative bg-[#FAFAFA] dark:bg-[#0f0a19]">
+
+            <!-- Mobile Header -->
+            <header
+                class="md:hidden flex items-center justify-between p-6 bg-white dark:bg-[#0f0a19] border-b border-slate-200 dark:border-slate-800">
+                <div class="font-black text-2xl bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent">
+                    YapeUser</div>
+            </header>
+
+            <div class="flex-1 overflow-y-auto p-6 md:p-12 scroll-smooth">
+                <div class="max-w-[1600px] mx-auto flex flex-col gap-10">
+
+                    <!-- Header Component -->
+                    <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+                        <div class="flex flex-col gap-2">
+                            <h1 id="welcomeMsg"
+                                class="text-4xl md:text-5xl font-black tracking-tight text-slate-900 dark:text-white">
+                                Hola, Usuario</h1>
+                            <p class="text-slate-500 dark:text-slate-400 text-lg font-medium flex items-center gap-2">
+                                <span class="size-2 rounded-full bg-green-500 animate-pulse"></span>
+                                Tus reportes financieros al día
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Stats Grid -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+
+                        <!-- CARD: HOY -->
+                        <div
+                            class="bg-white dark:bg-[#151024] rounded-[2rem] p-8 shadow-premium hover:shadow-premium-hover transition-all duration-300 group cursor-default relative overflow-hidden border border-slate-100 dark:border-slate-800">
+                            <div
+                                class="absolute -right-10 -top-10 size-40 bg-emerald-500/5 rounded-full blur-3xl group-hover:bg-emerald-500/10 transition-colors">
+                            </div>
+                            <div class="flex flex-col h-full justify-between gap-6 relative z-10">
+                                <div class="flex justify-between items-start">
+                                    <div class="p-3 rounded-2xl bg-emerald-50 dark:bg-emerald-500/10 text-emerald-500">
+                                        <span class="material-symbols-outlined text-3xl">today</span>
+                                    </div>
+                                    <span
+                                        class="text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-500 px-3 py-1 rounded-full">Hoy</span>
+                                </div>
+                                <div>
+                                    <h3 id="statToday"
+                                        class="text-5xl font-black text-emerald-600 dark:text-emerald-400 tracking-tighter mb-1">
+                                        S/ 0.00</h3>
+                                    <p class="text-slate-500 dark:text-slate-400 font-bold text-sm">Ingresos del Día
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- CARD: ESTE MES -->
+                        <div
+                            class="bg-white dark:bg-[#151024] rounded-[2rem] p-8 shadow-premium hover:shadow-premium-hover transition-all duration-300 group cursor-default relative overflow-hidden border border-slate-100 dark:border-slate-800">
+                            <div
+                                class="absolute -right-10 -top-10 size-40 bg-primary/5 rounded-full blur-3xl group-hover:bg-primary/10 transition-colors">
+                            </div>
+                            <div class="flex flex-col h-full justify-between gap-6 relative z-10">
+                                <div class="flex justify-between items-start">
+                                    <div class="p-3 rounded-2xl bg-primary/10 text-primary">
+                                        <span class="material-symbols-outlined text-3xl">calendar_month</span>
+                                    </div>
+                                    <span
+                                        class="text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-500 px-3 py-1 rounded-full">Mes</span>
+                                </div>
+                                <div>
+                                    <h3 id="statMonth"
+                                        class="text-5xl font-black text-slate-900 dark:text-white tracking-tighter mb-1">
+                                        S/ 0.00</h3>
+                                    <p class="text-slate-500 dark:text-slate-400 font-bold text-sm">Acumulado Mensual
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- CARD: TOTAL HISTÓRICO -->
+                        <div
+                            class="bg-white dark:bg-[#151024] rounded-[2rem] p-8 shadow-premium hover:shadow-premium-hover transition-all duration-300 group cursor-default relative overflow-hidden border border-slate-100 dark:border-slate-800">
+                            <div
+                                class="absolute -right-10 -top-10 size-40 bg-blue-500/5 rounded-full blur-3xl group-hover:bg-blue-500/10 transition-colors">
+                            </div>
+                            <div class="flex flex-col h-full justify-between gap-6 relative z-10">
+                                <div class="flex justify-between items-start">
+                                    <div class="p-3 rounded-2xl bg-blue-50 dark:bg-blue-500/10 text-blue-500">
+                                        <span class="material-symbols-outlined text-3xl">trending_up</span>
+                                    </div>
+                                    <span
+                                        class="text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-500 px-3 py-1 rounded-full">Total</span>
+                                </div>
+                                <div>
+                                    <h3 id="statTotal"
+                                        class="text-5xl font-black text-slate-900 dark:text-white tracking-tighter mb-1">
+                                        S/ 0.00</h3>
+                                    <p class="text-slate-500 dark:text-slate-400 font-bold text-sm">Total Histórico</p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Filters Card -->
+                    <div
+                        class="bg-white dark:bg-[#151024] rounded-[2.5rem] p-8 shadow-premium border border-slate-100 dark:border-slate-800">
+                        <h2 class="text-xl font-black text-slate-900 dark:text-white mb-6">Filtros de Búsqueda</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-end">
+                            <div>
+                                <label
+                                    class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Rango
+                                    de Fechas</label>
+                                <div class="relative">
+                                    <span
+                                        class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">calendar_today</span>
+                                    <input id="dateFilter"
+                                        class="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 pl-10 pr-4 py-3 text-sm font-medium focus:ring-primary focus:border-primary transition-all"
+                                        placeholder="Seleccionar...">
+                                </div>
+                            </div>
+                            <div>
+                                <label
+                                    class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Nombre
+                                    Remitente</label>
+                                <div class="relative">
+                                    <span
+                                        class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">person</span>
+                                    <input type="text" id="nameFilter"
+                                        class="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 pl-10 pr-4 py-3 text-sm font-medium focus:ring-primary focus:border-primary transition-all"
+                                        placeholder="Ej: Juan">
+                                </div>
+                            </div>
+                            <div>
+                                <label
+                                    class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Monto
+                                    Mínimo</label>
+                                <div class="relative">
+                                    <span
+                                        class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400">payments</span>
+                                    <input type="number" id="minAmountFilter"
+                                        class="w-full rounded-xl border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50 pl-10 pr-4 py-3 text-sm font-medium focus:ring-primary focus:border-primary transition-all"
+                                        placeholder="0.00">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Payments Table -->
+                    <div
+                        class="bg-white dark:bg-[#151024] rounded-[2.5rem] shadow-premium overflow-hidden p-6 border border-slate-100 dark:border-slate-800">
+                        <div class="flex items-center justify-between px-4 mb-6">
+                            <div>
+                                <h2 class="text-2xl font-black text-slate-900 dark:text-white">Historial de Pagos</h2>
+                                <p class="text-slate-500 text-sm font-medium">Todas tus transacciones registradas</p>
+                            </div>
+                            <span id="resultsCount"
+                                class="text-xs font-bold bg-slate-100 dark:bg-slate-800 px-3 py-1 rounded-full text-slate-500">0
+                                registros</span>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="bg-slate-50 dark:bg-slate-900/50">
+                                        <th
+                                            class="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-widest rounded-l-2xl">
+                                            Fecha y Hora</th>
+                                        <th
+                                            class="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-widest">
+                                            Remitente</th>
+                                        <th
+                                            class="px-6 py-4 text-xs font-bold text-slate-400 uppercase tracking-widest rounded-r-2xl">
+                                            Monto</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="paymentsTableBody" class="divide-y divide-slate-50 dark:divide-slate-800/30">
+                                    <tr>
+                                        <td colspan="3" class="px-6 py-8 text-center text-slate-400">Cargando...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts Dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+    <!-- Custom Config -->
+    <script src="../js/firebase-config.js"></script>
+    <script src="../js/auth.js"></script>
+    <script>checkAuth('user');</script>
+    <script>
+        function logout() {
+            localStorage.removeItem('yape_user');
+            window.location.href = '../index.html';
+        }
+    </script>
+    <script src="../js/user.js"></script>
+
+</body>
+
+</html>
