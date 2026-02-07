@@ -131,38 +131,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 
     <!-- UI Logic for Sidebar -->
-    <script>
-        function toggleSidebar() {
-            const sidebar = document.getElementById('sidebar');
-            sidebar.classList.toggle('hidden');
-            sidebar.classList.toggle('mobile-active');
-        }
-
-        function closeSidebarMobile() {
-            const sidebar = document.getElementById('sidebar');
-            if (window.innerWidth < 768) { // Only on mobile
-                sidebar.classList.add('hidden');
-                sidebar.classList.remove('mobile-active');
-            }
-        }
-
-        // Auto-fix layout on resize
-        window.addEventListener('resize', () => {
-            if (window.innerWidth >= 768) {
-                const sidebar = document.getElementById('sidebar');
-                sidebar.classList.remove('hidden'); // Ensure visible on desktop
-                sidebar.classList.remove('mobile-active'); // Remove mobile overlay mode
-            } else {
-                // On mobile, default to hidden if not explicitly open? 
-                // Better to let it be hidden by default 'hidden md:flex' class structure
-                // But we manipulated 'hidden' class manually.
-                const sidebar = document.getElementById('sidebar');
-                if (!sidebar.classList.contains('mobile-active')) {
-                    sidebar.classList.add('hidden');
-                }
-            }
-        });
-    </script>
+    <!-- UI Logic for Sidebar moved to end of body -->
 </head>
 
 <body
@@ -170,9 +139,17 @@
 
     <div class="flex h-screen w-full relative">
         <!-- SIDEBAR -->
+        <!-- SIDEBAR -->
         <aside id="sidebar"
-            class="hidden md:flex w-24 flex-col items-center py-10 h-full bg-[#050505]/95 backdrop-blur-xl border-r border-white/5 z-40">
-            <div class="flex flex-col items-center mb-12">
+            class="hidden md:flex w-24 flex-col items-center py-10 h-full bg-[#050505]/95 backdrop-blur-xl border-r border-white/5 z-[60] fixed md:relative inset-y-0 left-0">
+
+            <!-- Mobile Close Button -->
+            <button onclick="toggleSidebar()"
+                class="md:hidden absolute top-2 right-2 p-2 text-slate-400 hover:text-white transition-colors bg-white/5 rounded-full">
+                <span class="material-symbols-outlined text-2xl">close</span>
+            </button>
+
+            <div class="flex flex-col items-center mb-12 mt-4 md:mt-0">
                 <div
                     class="size-12 rounded-2xl bg-gradient-to-tr from-primary to-accent flex items-center justify-center text-white font-black text-xl shadow-[0_0_20px_rgba(91,19,236,0.5)]">
                     Y
@@ -661,7 +638,7 @@
                 </button>
             </div>
 
-            <form id="createUserForm" class="flex flex-col gap-5">
+            <form id="createUserForm" class="flex flex-col gap-4">
                 <div>
                     <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Usuario</label>
                     <div class="relative">
@@ -726,33 +703,29 @@
                 </button>
             </div>
 
-            <form id="editUserForm" class="flex flex-col gap-5">
-                <input type="hidden" id="editUsernameOriginal">
+            <div
+                class="bg-amber-50 dark:bg-amber-500/10 p-4 rounded-xl border border-amber-100 dark:border-amber-500/20">
+                <p class="text-xs text-amber-600 dark:text-amber-400 font-bold">
+                    <span class="material-symbols-outlined text-[16px] align-text-bottom mr-1">warning</span>
+                    Cambiar el dispositivo asignado cerrará la sesión del usuario actual en la App.
+                </p>
+            </div>
 
+            <form id="editUserForm" class="flex flex-col gap-4">
+                <input type="hidden" id="editUsername">
                 <div>
-                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Usuario</label>
-                    <div class="relative">
-                        <span
-                            class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[20px]">person</span>
-                        <input type="text" id="editUsernameDisplay" disabled
-                            class="w-full rounded-xl border-slate-200 bg-slate-100 text-slate-500 pl-10 p-3 text-sm font-bold cursor-not-allowed">
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Reasignar
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Nuevo
                         Dispositivo</label>
                     <div class="relative">
                         <span
                             class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[20px]">smartphone</span>
                         <select id="editDeviceSelect"
                             class="w-full rounded-xl border-slate-200 bg-slate-50 pl-10 p-3 text-sm font-bold focus:ring-primary focus:border-primary appearance-none">
-                            <option value="">-- Sin Dispositivo --</option>
+                            <option value="">Cargando equipos...</option>
                         </select>
                         <span
                             class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">expand_more</span>
                     </div>
-                    <p class="text-[10px] text-slate-400 mt-1">Selecciona un dispositivo aprobado libre.</p>
                 </div>
 
                 <div class="flex gap-3 mt-4">
@@ -770,6 +743,42 @@
 
     <!-- Core Logic -->
     <script src="../js/admin.js"></script>
+
+    <!-- Sidebar Logic (Moved to bottom) -->
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            // Toggle Logic
+            if (sidebar.classList.contains('hidden')) {
+                sidebar.classList.remove('hidden');
+                sidebar.classList.add('mobile-active');
+            } else {
+                sidebar.classList.add('hidden');
+                sidebar.classList.remove('mobile-active');
+            }
+        }
+
+        function closeSidebarMobile() {
+            const sidebar = document.getElementById('sidebar');
+            if (window.innerWidth < 768) {
+                sidebar.classList.add('hidden');
+                sidebar.classList.remove('mobile-active');
+            }
+        }
+
+        window.addEventListener('resize', () => {
+            if (window.innerWidth >= 768) {
+                const sidebar = document.getElementById('sidebar');
+                sidebar.classList.remove('hidden');
+                sidebar.classList.remove('mobile-active');
+            } else {
+                const sidebar = document.getElementById('sidebar');
+                if (!sidebar.classList.contains('mobile-active')) {
+                    sidebar.classList.add('hidden');
+                }
+            }
+        });
+    </script>
 </body>
 
 </html>
